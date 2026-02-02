@@ -1,0 +1,218 @@
+     /* --- CSS Reset & Fonts --- */
+     * {
+         margin: 0;
+         padding: 0;
+         box-sizing: border-box;
+         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+     }
+
+     body {
+         background-color: #FFECEC;
+         height: 100vh;
+         display: flex;
+         justify-content: center;
+         align-items: center;
+     }
+
+     /* --- Container Chính --- */
+     .auth-container {
+         position: relative;
+         width: 850px;
+         height: 550px;
+         background: white;
+         border-radius: 30px;
+         box-shadow: 0 15px 35px rgb(45 17 17 / 8%);
+         overflow: hidden;
+         display: flex;
+     }
+
+     /* --- Lớp Phủ Hình Ảnh (Sliding Overlay) --- */
+     .overlay-container {
+         position: absolute;
+         top: 0;
+         left: 50%;
+         width: 50%;
+         height: 100%;
+         z-index: 10;
+         transition: transform 0.6s;
+         overflow: hidden;
+     }
+
+     .overlay-container img {
+         width: 100%;
+         height: 100%;
+         object-fit: cover;
+     }
+
+     /* Khi ở chế độ Signup, tấm ảnh trượt sang trái */
+     .auth-container.signup-mode .overlay-container {
+         transform: translateX(-100%);
+     }
+
+     /* --- Panel Chứa Form --- */
+     .forms-wrapper {
+         display: flex;
+         width: 100%;
+         height: 100%;
+         position: relative;
+     }
+
+     .form-box {
+         width: 50%;
+         height: 100%;
+         padding: 45px 45px;
+         display: flex;
+         flex-direction: column;
+         overflow-y: auto;
+         scrollbar-width: thin;
+         scrollbar-color: #9A5426 transparent;
+     }
+
+     .form-box::-webkit-scrollbar {
+         width: 6px;
+     }
+
+     .form-box::-webkit-scrollbar-track {
+         background: transparent;
+     }
+
+     .form-box::-webkit-scrollbar-thumb {
+         background-color: #9A5426;
+         border-radius: 20px;
+     }
+
+     /* Logo NeoArt */
+     .logo {
+         display: flex;
+         align-items: center;
+         gap: 10px;
+         margin-bottom: 25px;
+     }
+
+     .logo-icon {
+         width: 28px;
+         height: 28px;
+     }
+
+     .logo-text {
+         font-size: 22px;
+         font-weight: bold;
+         color: #1a4066;
+     }
+
+     /* Tab Header */
+     .tab-header {
+         display: flex;
+         gap: 30px;
+         margin-bottom: 20px;
+     }
+
+     .tab-item {
+         font-size: 19px;
+         color: #555;
+         cursor: pointer;
+         padding-bottom: 5px;
+         border-bottom: 2px solid #57111100;
+         transition: all 0.3s;
+     }
+
+     .tab-item.active {
+         color: #3b1c1c;
+         font-weight: bold;
+         border-bottom: 2px solid #333;
+     }
+
+     /* Form Elements */
+     .input-group {
+         margin-bottom: 5px;
+     }
+
+     .input-group label {
+         display: block;
+         font-size: 14px;
+         color: #333;
+         margin-bottom: 6px;
+         font-weight: 500;
+     }
+
+     .input-group input {
+         width: 100%;
+         padding: 12px 15px;
+         border: 1.5px solid #9A5426;
+         border-radius: 12px;
+         outline: none;
+         font-size: 14px;
+         color: #666;
+     }
+
+     .input-group input::placeholder {
+         color: #ccc;
+         letter-spacing: 2px;
+     }
+
+     .btn-submit {
+         width: 100%;
+         padding: 13px;
+         background-color: #F9402F;
+         color: white;
+         border: none;
+         border-radius: 10px;
+         font-size: 16px;
+         font-weight: 600;
+         cursor: pointer;
+         margin-top: 10px;
+     }
+
+     .btn-submit:hover {
+         background-color: #92392b;
+     }
+
+     .auth-container.signup-mode .login-box {
+         opacity: 0;
+         pointer-events: none;
+     }
+
+     .auth-container:not(.signup-mode) .signup-box {
+         opacity: 0;
+         pointer-events: none;
+     }
+
+     .toast-success {
+         position: absolute;
+         top: 15px;
+         right: 15px;
+         background-color: #C1E1C1;
+         color: #2D5A27;
+         padding: 6px 12px;
+         border-radius: 4px;
+         font-size: 12px;
+         font-weight: 500;
+         z-index: 999;
+         animation: fadeIn 0.3s ease-in-out,
+             fadeOut 0.5s ease-in-out 1s forwards;
+     }
+
+     /* Hiệu ứng hiện hình */
+     @keyframes fadeIn {
+         from {
+             opacity: 0;
+             transform: translateY(-5px);
+         }
+
+         to {
+             opacity: 1;
+             transform: translateY(0);
+         }
+     }
+
+     /* Hiệu ứng biến mất */
+     @keyframes fadeOut {
+         from {
+             opacity: 1;
+         }
+
+         to {
+             opacity: 0;
+             visibility: hidden;
+         }
+     }

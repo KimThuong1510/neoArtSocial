@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <title>NeoArt - Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/feedPage/feedHome.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+<div class="app-container">
+    <aside class="sidebar-left">
+        <div class="profile-top">
+            <img src="https://i.pravatar.cc/150?u=9" alt="User">
+        </div>
+
+        <div class="nav-icons-group">
+            <i class="fa-solid fa-house active"></i>
+            <i class="fa-solid fa-comment"></i>
+        </div>
+
+        <form th:action="@{/logout}" method="post" class="add-bottom" title="Đăng xuất">
+            <button type="submit" style="all: unset; cursor: pointer;">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </button>
+        </form>
+    </aside>
+
+    <main class="main-content">
+        <div class="search-bar-container">
+            <div class="search-header">
+                <div class="search-input-wrapper">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Bạn đang muốn tìm gì...">
+                </div>
+
+                <div class="add-bottom" title="Tạo bài viết">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="photo-feed">
+            <div class="photo-grid">
+                <div class="card" th:each="post : ${posts}">
+                    <img th:if="${post.images != null and #lists.size(post.images) > 0}"
+                         th:src="${post.images[0].filePath}" />
+                    <div class="label"
+                         th:text="${post.user.username}"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <aside class="sidebar-right">
+        <h3>Ảnh nổi bật</h3>
+        <div class="featured-grid">
+            <div class="featured-item"><img src="https://picsum.photos/200/300?random=11"><span>❤️ 1.2k</span></div>
+            <div class="featured-item"><img src="https://picsum.photos/200/300?random=12"><span>❤️ 1.1k</span></div>
+            <div class="featured-item"><img src="https://picsum.photos/200/300?random=13"><span>❤️ 1.2k</span></div>
+            <div class="featured-item"><img src="https://picsum.photos/200/300?random=14"><span>❤️ 1.1k</span></div>
+        </div>
+    </aside>
+</div>
+
+<div class="modal-overlay" id="createPostModal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="user-info">
+                <img src="https://i.pravatar.cc/100?u=9" alt="User">
+                <span sec:authentication="name">username</span>
+            </div>
+            <i class="fa-solid fa-xmark close-modal"></i>
+        </div>
+
+        <form th:action="@{/posts/create}" method="post" enctype="multipart/form-data">
+
+            <div class="modal-body">
+                <div class="modal-row">
+                    <label>Chủ đề:</label>
+                    <select name="category">
+                        <option value="BEAUTY">Sắc đẹp</option>
+                        <option value="NATURE">Thiên nhiên</option>
+                        <option value="ART">Nghệ thuật</option>
+                    </select>
+
+                    <label class="upload-btn">
+                        <i class="fa-regular fa-image"></i> Tải ảnh lên
+                        <input type="file"
+                               name="images"
+                               id="imageInput"
+                               accept="image/*"
+                               multiple hidden>
+                    </label>
+                </div>
+
+                <textarea name="content"
+                          placeholder="Mô tả ảnh của bạn ..."></textarea>
+
+                <div class="image-preview photo-grid"
+                     id="imagePreview"></div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit" class="btn-post">Đăng</button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+</body>
+<script th:src="@{/js/feedPage.js}"></script>
+
+</html>

@@ -1,0 +1,302 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #fce4ec;
+    height: 100vh;
+}
+
+.app-container {
+    display: flex;
+    height: 100%;
+}
+
+/* SIDEBAR TRÁI: XỬ LÝ CÁCH ĐỀU */
+.sidebar-left {
+    width: 70px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 0;
+    justify-content: space-between; /* Đẩy 3 phần ra 2 đầu và giữa */
+}
+
+.profile-top img {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.nav-icons-group {
+    flex: 1; /* Chiếm toàn bộ vùng giữa */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Căn giữa 2 icon trong vùng flex */
+    gap: 60px; /* Khoảng cách giữa Home và Message */
+}
+
+.nav-icons-group i {
+    font-size: 40px;
+    color: #e0e0e0;
+    cursor: pointer;
+}
+
+.nav-icons-group i.active { color: #ff4d6d; }
+
+.add-bottom i {
+    font-size: 30px;
+    color: #ff85a1;
+    cursor: pointer;
+}
+
+/* NỘI DUNG CHÍNH: DÀN RỘNG GRID */
+.main-content {
+    flex: 1;
+    background-color: #fff0f3;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.search-bar-container {
+    padding: 25px 40px;
+}
+
+.search-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.search-input-wrapper i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+}
+
+.search-input-wrapper input {
+    width: 100%;
+    padding: 14px 45px;
+    border-radius: 12px;
+    border: 1px solid #f8bbd0;
+    outline: none;
+    font-size: 16px;
+}
+
+/* SIDEBAR PHẢI */
+.sidebar-right {
+    width: 280px;
+    background-color: #ffebee;
+    border: 2px solid #f8cdcd;
+    padding: 30px 20px;
+}
+
+.sidebar-right h3 { margin-bottom: 20px; color: #333; }
+
+.featured-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.featured-item {
+    position: relative;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.featured-item img { width: 100%; height: 140px; object-fit: cover; }
+
+.featured-item span {
+    position: absolute;
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.3);
+    color: white;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+}
+
+/* SEARCH HEADER */
+.search-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* NÚT ĐĂNG XUẤT */
+.logout-btn {
+    width: 40px;
+    height: 40px;
+    background-color: #ff85a1;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.logout-btn i {
+    font-size: 22px;
+    color: white;
+}
+
+/* Hover nhẹ giống UI hiện đại */
+.logout-btn:hover {
+    background-color: #ff4d6d;
+    transform: scale(1.05);
+}
+
+/* ===== MODAL OVERLAY ===== */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+/* ===== MODAL BOX ===== */
+.modal {
+    width: 520px;
+    background: #fff;
+    border-radius: 14px;
+    padding: 20px;
+    animation: popup 0.25s ease;
+}
+
+@keyframes popup {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* ===== HEADER ===== */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-info img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.close-modal {
+    cursor: pointer;
+    font-size: 22px;
+    color: #999;
+}
+
+/* ===== BODY ===== */
+.modal-body {
+    margin-top: 15px;
+}
+
+.modal-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.modal-row select {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid #f3b2c0;
+}
+
+.upload-btn {
+    margin-left: auto;
+    cursor: pointer;
+    color: #ff4d6d;
+    font-weight: 500;
+}
+
+.modal-body textarea {
+    width: 100%;
+    height: 120px;
+    border-radius: 10px;
+    border: 1px solid #f3b2c0;
+    padding: 12px;
+    resize: none;
+    outline: none;
+}
+
+/* ===== FOOTER ===== */
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 15px;
+}
+
+.btn-post {
+    background: #ff4d6d;
+    color: #fff;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+/* IMAGE PREVIEW */
+.image-preview {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+
+.preview-item {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #f3b2c0;
+}
+
+.preview-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* DELETE ICON */
+.preview-item .remove-img {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    font-size: 12px;
+    border-radius: 50%;
+    padding: 4px;
+    cursor: pointer;
+}
+
+.modal form {
+    display: contents;
+}
