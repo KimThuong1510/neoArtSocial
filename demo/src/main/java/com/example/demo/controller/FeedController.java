@@ -15,7 +15,6 @@ public class FeedController {
 
     @GetMapping("")
     public String feed(Model model) {
-        // Truyền đúng tên attribute là "posts" để khớp với feedHome.html (th:each="post : ${posts}")
         model.addAttribute("posts", postRepository.findAll());
         return "feedPage/feedHome";
     }
