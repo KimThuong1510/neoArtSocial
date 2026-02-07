@@ -23,8 +23,6 @@ import java.util.List;
 @RequestMapping("/posts")
 public class PostController {
 
-    private static final Logger log =
-            LoggerFactory.getLogger(PostController.class);
 
     @Autowired
     private PostService postService;

@@ -8,7 +8,6 @@ icons.forEach(icon => {
     });
 });
 
-
 // Nếu bạn vẫn muốn dùng JS thay vì CSS thuần:
 document.querySelectorAll('.card').forEach(card => {
     const img = card.querySelector('img');
@@ -47,12 +46,10 @@ const imageInput = document.getElementById("imageInput");
 const previewContainer = document.getElementById("imagePreview");
 
 // Hiển thị preview nhưng KHÔNG xóa giá trị input,
-// để form vẫn gửi được file lên backend
 if (imageInput && previewContainer) {
     imageInput.addEventListener("change", () => {
         const files = Array.from(imageInput.files);
 
-        // Xóa preview cũ
         previewContainer.innerHTML = "";
 
         files.forEach(file => {

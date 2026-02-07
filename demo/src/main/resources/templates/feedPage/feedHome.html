@@ -44,14 +44,37 @@
 
         <div class="photo-feed">
             <div class="photo-grid">
-                <div class="card" th:each="post : ${posts}">
+
+                <a th:href="@{/feed/{id}(id=${post.id})}" class="card"
+                   th:each="post : ${posts}"
+                   th:data-total="${#lists.size(post.images)}"
+                   style="text-decoration: none; display: block;">
+
+                    <!-- ẢNH ĐẠI DIỆN -->
                     <img th:if="${post.images != null and #lists.size(post.images) > 0}"
-                         th:src="${post.images[0].filePath}" />
-                    <div class="label"
-                         th:text="${post.user.username}"></div>
-                </div>
+                         th:src="@{${post.images[0].filePath}}"
+                         alt="post image"/>
+
+                    <!-- OVERLAY -->
+                    <div class="overlay">
+
+                        <!-- USERNAME -->
+                        <span class="username"
+                              th:text="${post.user.username}">
+                </span>
+
+                        <!-- +N ẢNH CÒN LẠI -->
+                        <span class="more-count"
+                              th:if="${#lists.size(post.images) > 1}"
+                              th:text="'+' + (${#lists.size(post.images)} - 1)">
+                </span>
+
+                    </div>
+                </a>
+
             </div>
         </div>
+
     </main>
 
     <aside class="sidebar-right">
