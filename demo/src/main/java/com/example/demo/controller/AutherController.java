@@ -67,9 +67,4 @@ public class AutherController {
          }
     }
 
-//    @GetMapping("/feedPage")
-//    public String showDashboard() {
-//        return "feedPage/feedHome";
-//    }
-
 }

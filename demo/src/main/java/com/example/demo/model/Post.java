@@ -20,7 +20,9 @@ public class Post {
     @JoinColumn(name = "user_id")
     private User user;
 
-    private String category;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "topic_id")
+    private Topic topic;
 
     @Column(columnDefinition = "TEXT")
     private String content;

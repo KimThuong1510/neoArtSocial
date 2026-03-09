@@ -12,12 +12,14 @@
 <body>
 <div class="app-container">
     <aside class="sidebar-left">
-        <div class="profile-top">
+        <a class="profile-top" th:href="@{/profile}">
             <img src="https://i.pravatar.cc/150?u=9" alt="User">
-        </div>
+        </a>
 
         <div class="nav-icons-group">
-            <i class="fa-solid fa-house active"></i>
+            <a th:href="@{/feed}">
+                <i class="fa-solid fa-house active"></i>
+            </a>
             <i class="fa-solid fa-comment"></i>
         </div>
 
@@ -52,30 +54,30 @@
                     <!-- CONTAINER ẢNH VỚI NÚT ĐIỀU HƯỚNG -->
                     <div class="image-container" style="position: relative;">
                         <!-- ẢNH POST -->
-                        <img class="post-main-image" 
+                        <img class="post-main-image"
                              th:src="@{${post.images[0].filePath}}"
                              id="currentImage"
                              alt="post image"
                              th:if="${post.images != null and #lists.size(post.images) > 0}">
-                        
+
                         <!-- NÚT MŨI TÊN TRÁI (chỉ hiện khi có >= 2 ảnh) -->
-                        <button class="nav-arrow nav-arrow-left" 
+                        <button class="nav-arrow nav-arrow-left"
                                 id="prevBtn"
                                 th:if="${post.images != null and #lists.size(post.images) > 1}"
                                 onclick="changeImage(-1)"
                                 style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 18px; z-index: 10;">
                             <i class="fa-solid fa-chevron-left"></i>
                         </button>
-                        
+
                         <!-- NÚT MŨI TÊN PHẢI (chỉ hiện khi có >= 2 ảnh) -->
-                        <button class="nav-arrow nav-arrow-right" 
+                        <button class="nav-arrow nav-arrow-right"
                                 id="nextBtn"
                                 th:if="${post.images != null and #lists.size(post.images) > 1}"
                                 onclick="changeImage(1)"
                                 style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 18px; z-index: 10;">
                             <i class="fa-solid fa-chevron-right"></i>
                         </button>
-                        
+
                         <!-- SỐ THỨ TỰ ẢNH (ví dụ: 1/3) -->
                         <div class="image-counter"
                              th:if="${post.images != null and #lists.size(post.images) > 1}"
@@ -88,11 +90,11 @@
                     <div class="post-actions">
                         <div class="left">
                             <i class="fa-regular fa-heart"></i>
-                            <span>1.3K</span>
+                            <span id="likeCount">0</span>
                             <i class="fa-regular fa-comment"></i>
-                            <span>300</span>
+                            <span id="commentCount">0</span>
                         </div>
-                        <i class="fa-regular fa-bookmark"></i>
+                        <i id="saveIcon" class="fa-regular fa-bookmark"></i>
                     </div>
                     <!-- COMMENT INPUT -->
                     <div class="post-comment">
@@ -108,8 +110,15 @@
                         <img class="avatar" src="https://i.pravatar.cc/100">
                         <div>
                             <strong th:text="${post.user.username}">Username</strong>
-                            <p th:text="${post.content}">Nội dung bài viết</p>
                         </div>
+                    </div>
+                    <div>
+                        <p th:text="${post.content}">Nội dung bài viết</p>
+                    </div>
+                    <!-- BÌNH LUẬN THEO ẢNH -->
+                    <div class="image-comment-preview">
+                        <h4>Bình luận cho ảnh này</h4>
+                        <p id="imageCommentText">Chưa có bình luận.</p>
                     </div>
                     <!-- ẢNH LIÊN QUAN -->
                     <div class="related-section">
@@ -138,52 +147,48 @@
     </aside>
 </div>
 
-<div class="modal-overlay" id="createPostModal">
-    <div class="modal">
-        <div class="modal-header">
-            <div class="user-info">
-                <img src="https://i.pravatar.cc/100?u=9" alt="User">
-                <span sec:authentication="name">username</span>
-            </div>
-            <i class="fa-solid fa-xmark close-modal"></i>
+<!--Modal like-->
+<div class="modal-overlay" id="likeModal">
+    <div class="like-modal">
+
+        <!-- HEADER -->
+        <div class="like-header">
+            <span>Người đã thích</span>
+            <i class="fa-solid fa-xmark close-like"></i>
         </div>
 
-        <form th:action="@{/posts/create}" method="post" enctype="multipart/form-data">
+        <!-- LIST USER -->
+        <div class="like-list">
 
-            <div class="modal-body">
-                <div class="modal-row">
-                    <label>Chủ đề:</label>
-                    <select name="category">
-                        <option value="BEAUTY">Sắc đẹp</option>
-                        <option value="NATURE">Thiên nhiên</option>
-                        <option value="ART">Nghệ thuật</option>
-                    </select>
-
-                    <label class="upload-btn">
-                        <i class="fa-regular fa-image"></i> Tải ảnh lên
-                        <input type="file"
-                               name="images"
-                               id="imageInput"
-                               accept="image/*"
-                               multiple hidden>
-                    </label>
+            <div class="like-user">
+                <div class="avatar-small">
+                    <i class="fa fa-user"></i>
                 </div>
 
-                <textarea name="content"
-                          placeholder="Mô tả ảnh của bạn ..."></textarea>
-
-                <div class="image-preview photo-grid"
-                     id="imagePreview"></div>
+                <div class="like-info">
+                    <b>Linh</b>
+                </div>
             </div>
 
-            <div class="modal-footer">
-                <button type="submit" class="btn-post">Đăng</button>
+            <div class="like-user">
+                <div class="avatar-small">
+                    <i class="fa fa-user"></i>
+                </div>
+
+                <div class="like-info">
+                    <b>Tuấn</b>
+
+                </div>
+
+
             </div>
 
-        </form>
+        </div>
 
     </div>
+
 </div>
+
 </body>
 <script th:src="@{/js/feedPage.js}"></script>
 <!-- Lưu danh sách đường dẫn ảnh vào biến JavaScript -->
@@ -194,35 +199,70 @@
     /*[# th:each="img : ${post.images}"]*/
     imagePaths.push(/*[[@{${img.filePath}}]]*/ '');
     /*[/]*/
-    
+
+    // Tạo meta giả lập cho từng ảnh (like, comment, text)
+    // Ở đây dùng chỉ số ảnh để tạo số khác nhau cho giao diện.
+    var imageMeta = [];
+    /*[# th:each="img,iter : ${post.images}"]*/
+    imageMeta.push({
+        index: /*[[${iter.index}]]*/ 0,
+        likes: 130 + (/*[[${iter.index}]]*/ 0 * 7),
+        comments: 30 + (/*[[${iter.index}]]*/ 0 * 5),
+        commentText: /*[['Bình luận mẫu cho ảnh ' + ${iter.index + 1}]]*/ 'Bình luận mẫu cho ảnh 1'
+    });
+    /*[/]*/
+
     var currentImageIndex = 0;
-    
+
+    function updateMetaForCurrentImage() {
+        if (!imageMeta || imageMeta.length === 0) return;
+        var meta = imageMeta[currentImageIndex] || imageMeta[0];
+
+        var likeEl = document.getElementById('likeCount');
+        if (likeEl && typeof meta.likes !== 'undefined') {
+            likeEl.textContent = meta.likes;
+        }
+
+        var commentEl = document.getElementById('commentCount');
+        if (commentEl && typeof meta.comments !== 'undefined') {
+            commentEl.textContent = meta.comments;
+        }
+
+        var commentTextEl = document.getElementById('imageCommentText');
+        if (commentTextEl && meta.commentText) {
+            commentTextEl.textContent = meta.commentText;
+        }
+    }
+
     // Chuyển ảnh trái/phải
     function changeImage(direction) {
         if (!imagePaths || imagePaths.length <= 1) return;
-        
+
         currentImageIndex += direction;
-        
+
         // Vòng lặp: nếu quá đầu thì về cuối, quá cuối thì về đầu
         if (currentImageIndex < 0) {
             currentImageIndex = imagePaths.length - 1;
         } else if (currentImageIndex >= imagePaths.length) {
             currentImageIndex = 0;
         }
-        
+
         // Cập nhật src của ảnh
         var currentImage = document.getElementById('currentImage');
         if (currentImage && imagePaths[currentImageIndex]) {
             currentImage.src = imagePaths[currentImageIndex];
         }
-        
+
         // Cập nhật số thứ tự
         var currentIndexSpan = document.getElementById('currentIndex');
         if (currentIndexSpan) {
             currentIndexSpan.textContent = currentImageIndex + 1;
         }
+
+        // Cập nhật số like / comment / nội dung comment theo ảnh
+        updateMetaForCurrentImage();
     }
-    
+
     // Hỗ trợ phím mũi tên để chuyển ảnh
     document.addEventListener('keydown', function(event) {
         if (event.key === 'ArrowLeft') {
@@ -231,6 +271,9 @@
             changeImage(1);
         }
     });
+
+    // Khởi tạo meta cho ảnh đầu tiên khi load trang
+    updateMetaForCurrentImage();
     /*]]>*/
 </script>
 

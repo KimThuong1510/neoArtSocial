@@ -12,9 +12,9 @@
 <body>
 <div class="app-container">
     <aside class="sidebar-left">
-        <div class="profile-top">
+        <a class="profile-top" th:href="@{/profile}">
             <img src="https://i.pravatar.cc/150?u=9" alt="User">
-        </div>
+        </a>
 
         <div class="nav-icons-group">
             <i class="fa-solid fa-house active"></i>
@@ -103,10 +103,12 @@
             <div class="modal-body">
                 <div class="modal-row">
                     <label>Chủ đề:</label>
-                    <select name="category">
-                        <option value="BEAUTY">Sắc đẹp</option>
-                        <option value="NATURE">Thiên nhiên</option>
-                        <option value="ART">Nghệ thuật</option>
+                    <select name="category" required>
+                        <option value="" disabled selected>-- Chọn chủ đề --</option>
+                        <option th:each="topic : ${topics}"
+                                th:value="${topic.code}"
+                                th:text="${topic.name}">
+                        </option>
                     </select>
 
                     <label class="upload-btn">
@@ -115,7 +117,7 @@
                                name="images"
                                id="imageInput"
                                accept="image/*"
-                               multiple hidden>
+                               multiple hidden required>
                     </label>
                 </div>
 

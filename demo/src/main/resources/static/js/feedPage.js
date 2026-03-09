@@ -70,3 +70,31 @@ if (imageInput && previewContainer) {
         });
     });
 }
+
+// Modal like
+const likeModal = document.getElementById("likeModal");
+const closeLike = document.querySelector(".close-like");
+
+document.querySelectorAll(".fa-regular fa-heart").forEach(btn => {
+
+    btn.addEventListener("click",(e)=>{
+
+        e.stopPropagation();
+
+        likeModal.style.display = "flex";
+
+    });
+
+});
+
+closeLike.onclick = () =>{
+    likeModal.style.display = "none";
+}
+
+likeModal.addEventListener("click",(e)=>{
+
+    if(e.target === likeModal){
+        likeModal.style.display="none";
+    }
+
+});

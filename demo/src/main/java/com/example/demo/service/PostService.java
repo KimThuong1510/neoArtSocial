@@ -9,8 +9,17 @@ import java.util.List;
 public interface PostService {
     void createPost(
             String content,
-            String category,
+            String topicCode,
             List<MultipartFile> files,
             User user
     );
+    void updatePost(
+            Long postId,
+            String topicCode,
+            String content,
+            List<MultipartFile> images,
+            User user
+    );
+
+    void deletePost(Long postId, User user);
 }
