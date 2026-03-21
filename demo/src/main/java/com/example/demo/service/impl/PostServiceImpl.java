@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -33,6 +34,9 @@ public class PostServiceImpl implements PostService {
 
     @Autowired
     private TopicRepository topicRepository;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Override
     @Transactional
@@ -143,6 +147,10 @@ public class PostServiceImpl implements PostService {
         if (!post.getUser().getId().equals(user.getId())) {
             throw new RuntimeException("Unauthorized to delete this post");
         }
+
+        // DB đang chặn xóa do bảng phụ (vd: saved_posts) có khóa ngoại tới posts.
+        // Xóa trước các bản ghi ràng buộc để delete Post không bị Foreign Key constraint fails.
+        jdbcTemplate.update("DELETE FROM saved_posts WHERE post_id = ?", postId);
 
         postRepository.delete(post);
     }

@@ -146,9 +146,19 @@ openBtns.forEach(btn => {
         document.getElementById('editPostCategory').value = topic;
         document.getElementById('editPostContent').value = content;
         
-        // Reset preview và input hình ảnh khi mở modal
+        // Reset input file và hiển thị ảnh hiện tại trong modal
         editImageInput.value = '';
         imagePreview.innerHTML = '';
+        const existingImage = btn.getAttribute('data-image');
+        if (existingImage) {
+            const img = document.createElement('img');
+            img.src = existingImage;
+            img.style.maxWidth = '100px';
+            img.style.maxHeight = '100px';
+            img.style.margin = '5px';
+            img.style.borderRadius = '5px';
+            imagePreview.appendChild(img);
+        }
 
         modal.style.display = 'flex';
         
@@ -235,22 +245,30 @@ deleteModal.addEventListener("click",(e)=>{
 confirmDelete.onclick = () => {
 
     if(currentDeletePostId){
-        const formData = new FormData();
-        formData.append('postId', currentDeletePostId);
+        const payload = new URLSearchParams();
+        payload.append('postId', currentDeletePostId);
 
         fetch('/posts/delete', {
             method: 'POST',
-            body: formData
-        }).then(response => {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            },
+            body: payload,
+            credentials: 'same-origin'
+        }).then(async (response) => {
             if (response.ok) {
                 if(currentCard){
                     currentCard.remove();
                 }
                 deleteModal.style.display="none";
                 window.location.reload();
-            } else {
-                alert("Có lỗi xảy ra khi xóa bài viết!");
+                return;
             }
+
+            // Backend đang trả về text trong body; lấy thêm để biết chính xác vì sao 400.
+            const errText = await response.text().catch(() => "");
+            console.error("Lỗi xóa bài viết:", response.status, errText);
+            alert(errText ? `Có lỗi xảy ra khi xóa bài viết! ${errText}` : "Có lỗi xảy ra khi xóa bài viết!");
         }).catch(error => {
             console.error("Lỗi xóa bài viết:", error);
             alert("Lỗi kết nối.");

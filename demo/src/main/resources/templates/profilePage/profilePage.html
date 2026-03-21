@@ -116,7 +116,8 @@
                     <div class="edit-post"
                          th:data-post-id="${post.id}"
                          th:data-topic="${post.topic != null ? post.topic.code : ''}"
-                         th:data-content="${post.content}">Chỉnh sửa bài viết</div>
+                         th:data-content="${post.content}"
+                         th:data-image="${post.images != null and #lists.size(post.images) > 0 ? post.images[0].filePath : ''}">Chỉnh sửa bài viết</div>
                     <div class="delete-post" th:data-post-id="${post.id}">Xóa bài viết</div>
                 </div>
             </div>
