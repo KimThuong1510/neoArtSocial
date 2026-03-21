@@ -46,6 +46,7 @@ public class FeedController {
         }
         model.addAttribute("post", post);
         model.addAttribute("isSavedByUser", isSavedByUser);
+        model.addAttribute("topics", topicRepository.findAll());
         return "feedPage/feedDetail";
     }
 }

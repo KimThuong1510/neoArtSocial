@@ -219,6 +219,7 @@ openBtns.forEach(btn => {
         const postId = btn.getAttribute('data-post-id');
         const topic = btn.getAttribute('data-topic');
         const content = btn.getAttribute('data-content');
+        const card = e.target.closest('.card') || btn.closest('.card');
 
         // Điền dữ liệu vào form chỉnh sửa
         document.getElementById('editPostId').value = postId;
@@ -229,16 +230,38 @@ openBtns.forEach(btn => {
         editImageInput.value = '';
         imagePreview.innerHTML = '';
 
-        const existingImage = btn.getAttribute('data-image');
-        if (existingImage) {
+        const existingImages = [];
+        if (card) {
+            const imageNodes = card.querySelectorAll('.image-data span');
+            if (imageNodes.length > 0) {
+                imageNodes.forEach(node => {
+                    const imageUrl = node.getAttribute('data-url');
+                    if (imageUrl) existingImages.push(imageUrl);
+                });
+            } else {
+                const singleImage = card.querySelector('img.img-main');
+                if (singleImage && singleImage.src) {
+                    existingImages.push(singleImage.src);
+                }
+            }
+        }
+
+        if (existingImages.length === 0) {
+            const fallbackImage = btn.getAttribute('data-image');
+            if (fallbackImage) {
+                existingImages.push(fallbackImage);
+            }
+        }
+
+        existingImages.forEach(imageUrl => {
             const img = document.createElement('img');
-            img.src = existingImage;
+            img.src = imageUrl;
             img.style.maxWidth = '100px';
             img.style.maxHeight = '100px';
             img.style.margin = '5px';
             img.style.borderRadius = '5px';
             imagePreview.appendChild(img);
-        }
+        });
 
         modal.style.display = 'flex';
 
@@ -251,7 +274,7 @@ openBtns.forEach(btn => {
             // Gửi dữ liệu cập nhật
             const formData = new FormData();
             formData.append('postId', upostId);
-            if (ucategory) formData.append('category', ucategory);
+            if (ucategory) formData.append('topic', ucategory);
             formData.append('content', ucontent);
 
             const files = document.getElementById('editImageInput').files;

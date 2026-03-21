@@ -13,7 +13,7 @@ body {
 
 /* SIDEBAR TRÁI: XỬ LÝ CÁCH ĐỀU */
 .sidebar-left {
-    width: 70px;
+    width: 80px;
     background: #fff;
     display: flex;
     flex-direction: column;

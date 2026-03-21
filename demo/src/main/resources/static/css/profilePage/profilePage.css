@@ -387,6 +387,7 @@ select{
     top:10px;
     right:10px;
     padding:6px;
+    z-index:20;
 }
 
 .card-menu i{
@@ -409,6 +410,7 @@ select{
     display:none;
     overflow:hidden;
     min-width:120px;
+    z-index:30;
 }
 
 .card-popup div{

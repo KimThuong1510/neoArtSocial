@@ -28,7 +28,6 @@ import java.util.Optional;
 @RequestMapping("/posts")
 public class PostController {
 
-
     @Autowired
     private PostService postService;
 
@@ -104,8 +103,6 @@ public class PostController {
     @GetMapping("/download")
     public ResponseEntity<Resource> downloadImage(@RequestParam("imageUrl") String imageUrl) {
         try {
-            // imageUrl is expected to be something like "/uploads/posts/filename.ext"
-            // We strip the leading slash if it exists
             String cleanPath = imageUrl;
             if (cleanPath.startsWith("/")) {
                 cleanPath = cleanPath.substring(1);
