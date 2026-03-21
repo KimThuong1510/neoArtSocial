@@ -2,8 +2,10 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Post;
 import com.example.demo.repository.PostRepository;
+import com.example.demo.repository.SavedPostRepository;
 import com.example.demo.repository.TopicRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +23,9 @@ public class FeedController {
     @Autowired
     private TopicRepository topicRepository;
 
+    @Autowired
+    private SavedPostRepository savedPostRepository;
+
     @GetMapping("")
     public String feed(Model model) {
         model.addAttribute("posts", postRepository.findAll());
@@ -29,13 +34,18 @@ public class FeedController {
     }
 
     @GetMapping("/{postId}")
-    public String feedDetail(@PathVariable Long postId, Model model) {
+    public String feedDetail(@PathVariable Long postId, Model model, Authentication authentication) {
         Optional<Post> postOpt = postRepository.findById(postId);
         if (postOpt.isEmpty()) {
             return "redirect:/feed";
         }
         Post post = postOpt.get();
+        boolean isSavedByUser = false;
+        if (authentication != null && authentication.isAuthenticated() && !authentication.getName().equals("anonymousUser")) {
+            isSavedByUser = savedPostRepository.existsByCollectionUserUsernameAndPostId(authentication.getName(), postId);
+        }
         model.addAttribute("post", post);
+        model.addAttribute("isSavedByUser", isSavedByUser);
         return "feedPage/feedDetail";
     }
 }

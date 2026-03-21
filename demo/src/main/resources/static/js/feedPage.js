@@ -25,22 +25,25 @@ const openBtn = document.querySelector('.add-bottom i.fa-pen-to-square');
 const modal = document.getElementById('createPostModal');
 const closeBtn = document.querySelector('.close-modal');
 
-// mở popup
-openBtn.addEventListener('click', () => {
-    modal.style.display = 'flex';
-});
+if (openBtn) {
+    openBtn.addEventListener("click", () => {
+        if(modal) modal.style.display = "flex";
+    });
+}
 
-// đóng popup
-closeBtn.addEventListener('click', () => {
-    modal.style.display = 'none';
-});
+if (closeBtn) {
+    closeBtn.addEventListener("click", () => {
+        if(modal) modal.style.display = "none";
+    });
+}
 
-// click ra ngoài để đóng
-modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
-        modal.style.display = 'none';
-    }
-});
+if (modal) {
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+}
 
 const imageInput = document.getElementById("imageInput");
 const previewContainer = document.getElementById("imagePreview");
@@ -75,7 +78,7 @@ if (imageInput && previewContainer) {
 const likeModal = document.getElementById("likeModal");
 const closeLike = document.querySelector(".close-like");
 
-document.querySelectorAll(".fa-regular fa-heart").forEach(btn => {
+document.querySelectorAll(".fa-regular .fa-heart").forEach(btn => {
 
     btn.addEventListener("click",(e)=>{
 
@@ -98,3 +101,159 @@ likeModal.addEventListener("click",(e)=>{
     }
 
 });
+
+// --- Modal Save Collection ---
+const saveIcon = document.getElementById('saveIcon');
+const saveCollectionModal = document.getElementById('saveCollectionModal');
+const closeSaveModalBtn = document.getElementById('closeSaveModalBtn');
+const collectionsList = document.getElementById('collectionsList');
+const newCollectionNameInput = document.getElementById('newCollectionName');
+const createCollectionBtn = document.getElementById('createCollectionBtn');
+const postContainer = document.getElementById('mainPostContainer');
+
+if (saveIcon && saveCollectionModal) {
+    saveIcon.addEventListener('click', async () => {
+        saveCollectionModal.style.display = 'flex';
+        await fetchAndDisplayCollections();
+    });
+
+    closeSaveModalBtn.addEventListener('click', () => {
+        saveCollectionModal.style.display = 'none';
+    });
+
+    saveCollectionModal.addEventListener('click', (e) => {
+        if (e.target === saveCollectionModal) {
+            saveCollectionModal.style.display = 'none';
+        }
+    });
+
+    createCollectionBtn.addEventListener('click', async () => {
+        const name = newCollectionNameInput.value.trim();
+        if (!name) {
+            alert("Vui lòng nhập tên thư mục");
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/collections', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name: name })
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                newCollectionNameInput.value = '';
+                await fetchAndDisplayCollections(); // Refresh list
+            } else {
+                alert(data.error || "Có lỗi xảy ra khi tạo thư mục");
+            }
+        } catch (error) {
+            console.error("Error creating collection:", error);
+            alert("Lỗi kết nối máy chủ");
+        }
+    });
+}
+
+async function fetchAndDisplayCollections() {
+    if (!collectionsList || !postContainer) return;
+
+    const postId = postContainer.getAttribute('data-post-id');
+    collectionsList.innerHTML = '<p style="text-align: center; color: #888; font-size: 14px;">Đang tải thư mục...</p>';
+
+    try {
+        const response = await fetch(`/api/collections?postId=${postId}`);
+        const collections = await response.json();
+
+        if (response.ok) {
+            collectionsList.innerHTML = '';
+            if (collections.length === 0) {
+                collectionsList.innerHTML = '<p style="text-align: center; color: #888; font-size: 14px;">Chưa có thư mục nào.</p>';
+                return;
+            }
+
+            collections.forEach(collection => {
+                const isSaved = collection.isSaved;
+                const div = document.createElement('div');
+                div.style.cssText = `
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 10px;
+                    border: 1px solid #eee;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    background-color: ${isSaved ? '#f0f8ff' : 'white'};
+                    transition: background-color 0.2s;
+                `;
+
+                div.onmouseover = () => { if(!isSaved) div.style.backgroundColor = '#f9f9f9'; };
+                div.onmouseout = () => { if(!isSaved) div.style.backgroundColor = 'white'; };
+
+                div.innerHTML = `
+                    <span style="font-weight: 500;">${collection.name}</span>
+                    <i class="fa-solid ${isSaved ? 'fa-bookmark' : 'fa-plus'}" style="color: ${isSaved ? '#e60023' : '#666'};"></i>
+                `;
+
+                div.addEventListener('click', () => toggleSavePost(collection.id, postId));
+
+                collectionsList.appendChild(div);
+            });
+        }
+    } catch (error) {
+        console.error("Error fetching collections:", error);
+        collectionsList.innerHTML = '<p style="text-align: center; color: red; font-size: 14px;">Lỗi tải dữ liệu.</p>';
+    }
+}
+
+// Download functionality
+const downloadIcon = document.getElementById("downloadIcon");
+if (downloadIcon) {
+    downloadIcon.addEventListener("click", () => {
+        const currentImage = document.getElementById("currentImage");
+        if (currentImage && currentImage.src) {
+            // Get the relative path of the image (e.g., /uploads/posts/...)
+            try {
+                const url = new URL(currentImage.src);
+                const imagePath = url.pathname;
+
+                // Trigger download via backend endpoint
+                window.location.href = `/posts/download?imageUrl=${encodeURIComponent(imagePath)}`;
+            } catch (e) {
+                console.error("Invalid image URL context", e);
+            }
+        }
+    });
+}
+
+
+async function toggleSavePost(collectionId, postId) {
+    try {
+        const response = await fetch(`/api/collections/${collectionId}/toggle`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ postId: postId })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            if (data.isSaved) {
+                // Post was saved, redirect to saved items page
+                window.location.href = '/profile';
+            } else {
+                // Post was unsaved, just refresh the modal list
+                await fetchAndDisplayCollections();
+            }
+        } else {
+            alert(data.error || "Có lỗi xảy ra");
+        }
+    } catch (error) {
+        console.error("Error toggling save post:", error);
+        alert("Lỗi kết nối máy chủ");
+    }
+}

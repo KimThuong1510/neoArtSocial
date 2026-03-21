@@ -103,7 +103,7 @@
             <div class="modal-body">
                 <div class="modal-row">
                     <label>Chủ đề:</label>
-                    <select name="category" required>
+                    <select name="topic" required>
                         <option value="" disabled selected>-- Chọn chủ đề --</option>
                         <option th:each="topic : ${topics}"
                                 th:value="${topic.code}"

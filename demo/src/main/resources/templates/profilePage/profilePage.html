@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml">
+
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -7,6 +8,7 @@
     <link rel="stylesheet" th:href="@{/css/layout.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
+
 <body>
 <aside class="sidebar-left">
     <div class="profile-top">
@@ -40,8 +42,8 @@
     </div>
 
     <div class="avatar" id="avatarBox">
-        <img id="avatarImg" src="https://i.pravatar.cc/150?u=9">
-        <input type="file" id="avatarInput" hidden>
+        <img id="avatarImg" th:src="${user.avatar != null ? user.avatar : 'https://i.pravatar.cc/150?u=9'}">
+        <input type="file" id="avatarInput" accept="image/*" hidden>
     </div>
 
     <div class="nickname" th:text="${user.nickname}">Biệt danh</div>
@@ -62,31 +64,36 @@
     <!-- FORM EDIT -->
     <div id="editForm" class="form-area">
         <div class="form-group">
-            <label>Biệt danh</label>
-            <input placeholder="Nhập biệt danh">
+            <label>Tên người dùng</label>
+            <input id="editUsername" th:value="${user.username}" disabled
+                   style="background: #f0f0f0; cursor: not-allowed;">
         </div>
         <div class="form-group">
-            <label>Tên người dùng</label>
-            <input placeholder="Nhập tên">
+            <label>Biệt danh</label>
+            <input id="editNickname" th:value="${user.nickname}" placeholder="Nhập biệt danh">
         </div>
         <div class="form-group">
             <label>Ngày sinh</label>
-            <input type="date">
+            <input id="editBirthDate" type="date" th:value="${user.birthDate}">
         </div>
-        <button>Cập nhật</button>
+        <button onclick="updateProfile()">Cập nhật</button>
     </div>
 
     <!-- FORM PASSWORD -->
     <div id="passwordForm" class="form-area">
         <div class="form-group">
             <label>Mật khẩu cũ</label>
-            <input type="password">
+            <input type="password" id="oldPassword">
         </div>
         <div class="form-group">
             <label>Mật khẩu mới</label>
-            <input type="password">
+            <input type="password" id="newPassword">
         </div>
-        <button>Đổi mật khẩu</button>
+        <div class="form-group">
+            <label>Xác nhận mật khẩu mới</label>
+            <input type="password" id="confirmPassword">
+        </div>
+        <button onclick="changePassword()">Đổi mật khẩu</button>
     </div>
 </div>
 
@@ -99,22 +106,18 @@
         </div>
         <select name="category">
             <option value="" disabled selected>Chọn chủ đề</option>
-            <option th:each="topic : ${topics}"
-                    th:value="${topic.code}"
-                    th:text="${topic.name}">
+            <option th:each="topic : ${topics}" th:value="${topic.code}" th:text="${topic.name}">
             </option>
         </select>
     </div>
     <div class="posts" id="myPosts">
-        <div class="card"
-             th:each="post : ${myPosts}">
+        <div class="card" th:each="post : ${myPosts}">
 
             <div class="card-menu">
                 <i class="fa-solid fa-ellipsis"></i>
 
                 <div class="card-popup" th:data-post-id="${post.id}">
-                    <div class="edit-post"
-                         th:data-post-id="${post.id}"
+                    <div class="edit-post" th:data-post-id="${post.id}"
                          th:data-topic="${post.topic != null ? post.topic.code : ''}"
                          th:data-content="${post.content}"
                          th:data-image="${post.images != null and #lists.size(post.images) > 0 ? post.images[0].filePath : ''}">Chỉnh sửa bài viết</div>
@@ -122,18 +125,31 @@
                 </div>
             </div>
 
-            <img th:if="${post.images != null and #lists.size(post.images) > 0}"
-                 th:src="@{${post.images[0].filePath}}"
-                 alt="post image">
+            <div th:if="${post.images != null and #lists.size(post.images) > 1}" class="card-image-container"
+                 style="position: relative;" data-current-index="0">
+                <img th:src="@{${post.images[0].filePath}}" alt="post image" class="img-main">
+                <button class="prev-btn"
+                        style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; z-index: 10;">&#10094;</button>
+                <button class="next-btn"
+                        style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; z-index: 10;">&#10095;</button>
+                <div class="img-counter"
+                     style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); color: white; padding: 3px 10px; border-radius: 15px; font-size: 12px;">
+                    1 / <span th:text="${#lists.size(post.images)}"></span></div>
+
+                <div class="image-data" style="display: none;">
+                    <span th:each="img : ${post.images}" th:data-url="@{${img.filePath}}"></span>
+                </div>
+            </div>
+
+            <img th:if="${post.images != null and #lists.size(post.images) == 1}"
+                 th:src="@{${post.images[0].filePath}}" alt="post image" class="img-main">
 
             <div class="card-body">
 
-                <div class="card-title"
-                     th:text="${#strings.abbreviate(post.content, 40)}">
+                <div class="card-title" th:text="${#strings.abbreviate(post.content, 40)}">
                     Bức tranh rất đẹp
                 </div>
-                <div class="card-desc"
-                     th:text="${post.topic != null ? post.topic.name : ''}">
+                <div class="card-desc" th:text="${post.topic != null ? post.topic.name : ''}">
                     Một cảnh quan tuyệt vời với những ngọn núi đỏ
                 </div>
 
@@ -160,28 +176,29 @@
         </div>
     </div>
 
-    <!-- CARD CHỦ ĐỀ -->
+    <!-- CARD CHỦ ĐỀ (Saved Collections) -->
     <div class="topic-grid" id="topicGrid">
-        <div class="topic-card" data-topic="nature">
-            <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee">
-            <div class="topic-name">Thiên nhiên</div>
+        <div class="topic-card" th:each="collection : ${savedCollections}" th:data-collection-id="${collection.id}">
+            <img th:src="@{${collection.coverImage}}" alt="Collection Cover">
+            <div class="topic-name" th:text="${collection.name}">Tên thư mục</div>
+        </div>
+
+        <!-- Empty state fallback if no collections exist -->
+        <div th:if="${#lists.isEmpty(savedCollections)}"
+             style="grid-column: 1 / -1; text-align: center; color: #888; padding: 20px;">
+            Bạn chưa có thư mục nào.
         </div>
     </div>
 
     <!-- BÀI ĐÃ LƯU -->
     <div class="posts" id="savedPosts">
         <div class="card">
-            <div class="card-menu">
-                <i class="fa-solid fa-ellipsis"></i>
-                <div class="card-popup">
-                    <div class="unsave-post">Xóa bài lưu</div>
-                </div>
-            </div>
+
             <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee">
             <div class="card-body">
                 <div class="card-title">Bức tranh rất đẹp</div>
                 <div class="card-desc">Một cảnh quan tuyệt vời với những ngọn núi đỏ</div>
-                <div class="author">
+                <div class="author" style="display: flex; justify-content: space-between; align-items: center;">
                     <div class="author-info">
                         <div class="author-avatar">
                             <i class="fa fa-user"></i>
@@ -190,6 +207,8 @@
                             Mathor
                         </div>
                     </div>
+                    <i class="fa-solid fa-bookmark unsave-icon"
+                       style="cursor: pointer; color: #e60023; font-size: 1.2rem;" title="Xóa bài lưu"></i>
                 </div>
                 <div class="reaction">
                     <span class="heart">❤ 1300</span>
@@ -219,9 +238,7 @@
                 <label>Chủ đề:</label>
                 <select name="category" id="editPostCategory">
                     <option value="" disabled selected>Chọn chủ đề</option>
-                    <option th:each="topic : ${topics}"
-                            th:value="${topic.code}"
-                            th:text="${topic.name}">
+                    <option th:each="topic : ${topics}" th:value="${topic.code}" th:text="${topic.name}">
                     </option>
                 </select>
                 <label class="upload-btn">
@@ -356,40 +373,15 @@
 
                 <div class="like-info">
                     <b>Tuấn</b>
-
                 </div>
-
-
             </div>
 
         </div>
-
     </div>
-
-</div>
-
-<!-- Modal xóa bài lưu -->
-<div class="modal-overlay" id="unsavePostModal">
-    <div class="modal">
-
-        <div class="modal-header">
-            <span>Xóa bài lưu</span>
-            <i class="fa-solid fa-xmark close-unsave"></i>
-        </div>
-
-        <div class="modal-body" style="text-align:center;padding:30px 10px;">
-            <p>Bạn có muốn xóa bài viết này khỏi danh sách đã lưu không?</p>
-        </div>
-
-        <div class="modal-footer" style="display:flex;gap:10px;justify-content:flex-end;">
-            <button class="btn-cancel-unsave">Hủy</button>
-            <button class="btn-confirm-unsave">Xóa</button>
-        </div>
-    </div>
-
 </div>
 
 </div>
 </body>
 <script th:src="@{/js/profilePage.js}"></script>
+
 </html>

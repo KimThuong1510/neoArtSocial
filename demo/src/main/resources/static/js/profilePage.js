@@ -6,43 +6,122 @@ const editForm = document.getElementById("editForm");
 const passwordForm = document.getElementById("passwordForm");
 
 menuBtn.addEventListener("click", (e) => {
-
-    e.stopPropagation();
-
-    const isOpen = popup.style.display === "block";
-
-    if(isOpen){
+    const isPopupOpen = popup.style.display === "block";
+    if (isPopupOpen && !e.target.closest("#menuPopup")) {
         popup.style.display = "none";
         editForm.style.display = "none";
         passwordForm.style.display = "none";
-    }else{
+    } else if (!isPopupOpen) {
         popup.style.display = "block";
     }
-
 });
 
-popup.addEventListener("click",(e)=>{
-    e.stopPropagation();
+document.addEventListener("mousedown", (e) => {
+    // Nếu click ra ngoài menuBtn và ra ngoài form thì đóng tất cả
+    if (!menuBtn.contains(e.target) &&
+        !editForm.contains(e.target) &&
+        !passwordForm.contains(e.target)) {
+
+        popup.style.display = "none";
+        editForm.style.display = "none";
+        passwordForm.style.display = "none";
+    }
 });
 
-document.addEventListener("click", () => {
-
-    popup.style.display = "none";
-    editForm.style.display = "none";
-    passwordForm.style.display = "none";
-
-});
-
-function showEdit(){
+function showEdit() {
 
     document.getElementById("editForm").style.display = "block";
     document.getElementById("passwordForm").style.display = "none";
 }
 
-function showPassword(){
+function showPassword() {
 
     document.getElementById("passwordForm").style.display = "block";
     document.getElementById("editForm").style.display = "none";
+}
+
+function updateProfile() {
+    const nickname = document.getElementById("editNickname").value;
+    const birthDate = document.getElementById("editBirthDate").value;
+    const avatarInput = document.getElementById("avatarInput");
+
+    if (!nickname || !birthDate) {
+        alert("Vui lòng điền đầy đủ thông tin!");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("nickname", nickname);
+    formData.append("birthDate", birthDate);
+
+    if (avatarInput.files.length > 0) {
+        formData.append("avatar", avatarInput.files[0]);
+    }
+
+    fetch("/profile/update", {
+        method: "POST",
+        body: formData
+    })
+        .then(async response => {
+            const data = await response.json();
+            if (response.ok) {
+                alert(data.message);
+                window.location.reload();
+            } else {
+                alert(data.error || "Có lỗi xảy ra!");
+            }
+        })
+        .catch(error => {
+            console.error("Lỗi:", error);
+            alert("Lỗi kết nối.");
+        });
+}
+
+function changePassword() {
+    const oldPassword = document.getElementById("oldPassword").value;
+    const newPassword = document.getElementById("newPassword").value;
+    const confirmPassword = document.getElementById("confirmPassword").value;
+
+    if (!oldPassword || !newPassword || !confirmPassword) {
+        alert("Vui lòng điền đầy đủ thông tin!");
+        return;
+    }
+
+    if (newPassword !== confirmPassword) {
+        alert("Mật khẩu xác nhận không khớp!");
+        return;
+    }
+
+    const payload = {
+        oldPassword: oldPassword,
+        newPassword: newPassword,
+        confirmPassword: confirmPassword
+    };
+
+    fetch("/profile/change-password", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+    })
+        .then(async response => {
+            const data = await response.json();
+            if (response.ok) {
+                alert(data.message);
+                document.getElementById("oldPassword").value = "";
+                document.getElementById("newPassword").value = "";
+                document.getElementById("confirmPassword").value = "";
+                document.getElementById("passwordForm").style.display = "none";
+                document.getElementById("menuPopup").style.display = "none";
+            } else {
+                alert(data.error || "Có lỗi xảy ra!");
+            }
+        })
+        .catch(error => {
+            console.error("Lỗi:", error);
+            alert("Lỗi kết nối.");
+        });
 }
 
 
@@ -52,19 +131,19 @@ const avatarBox = document.getElementById("avatarBox");
 const avatarInput = document.getElementById("avatarInput");
 const avatarImg = document.getElementById("avatarImg");
 
-avatarBox.addEventListener("click",()=>{
+avatarBox.addEventListener("click", () => {
     avatarInput.click();
 });
 
-avatarInput.addEventListener("change",(e)=>{
+avatarInput.addEventListener("change", (e) => {
 
     const file = e.target.files[0];
 
-    if(file){
+    if (file) {
 
         const reader = new FileReader();
 
-        reader.onload = function(event){
+        reader.onload = function (event) {
             avatarImg.src = event.target.result;
         }
 
@@ -83,12 +162,12 @@ document.querySelectorAll(".card-menu").forEach(menu => {
 
         e.stopPropagation();
 
-        document.querySelectorAll(".card-popup").forEach(p=>{
-            if(p!==popup) p.style.display="none";
+        document.querySelectorAll(".card-popup").forEach(p => {
+            if (p !== popup) p.style.display = "none";
         });
 
         popup.style.display =
-            popup.style.display==="block" ? "none":"block";
+            popup.style.display === "block" ? "none" : "block";
 
     });
 
@@ -96,8 +175,8 @@ document.querySelectorAll(".card-menu").forEach(menu => {
 
 document.addEventListener("click", () => {
 
-    document.querySelectorAll(".card-popup").forEach(p=>{
-        p.style.display="none";
+    document.querySelectorAll(".card-popup").forEach(p => {
+        p.style.display = "none";
     });
 
 });
@@ -111,7 +190,7 @@ const editImageInput = document.getElementById('editImageInput');
 const imagePreview = document.getElementById('imagePreview');
 
 // Xử lý preview ảnh khi người dùng chọn ảnh mới
-editImageInput.addEventListener('change', function(event) {
+editImageInput.addEventListener('change', function (event) {
     imagePreview.innerHTML = ''; // Xóa các preview cũ
     const files = event.target.files;
 
@@ -119,7 +198,7 @@ editImageInput.addEventListener('change', function(event) {
         Array.from(files).forEach(file => {
             const reader = new FileReader();
 
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 const img = document.createElement('img');
                 img.src = e.target.result;
                 img.style.maxWidth = '100px';
@@ -145,10 +224,11 @@ openBtns.forEach(btn => {
         document.getElementById('editPostId').value = postId;
         document.getElementById('editPostCategory').value = topic;
         document.getElementById('editPostContent').value = content;
-        
-        // Reset input file và hiển thị ảnh hiện tại trong modal
+
+        // Reset preview và input hình ảnh khi mở modal
         editImageInput.value = '';
         imagePreview.innerHTML = '';
+
         const existingImage = btn.getAttribute('data-image');
         if (existingImage) {
             const img = document.createElement('img');
@@ -161,9 +241,9 @@ openBtns.forEach(btn => {
         }
 
         modal.style.display = 'flex';
-        
+
         // Cập nhật sự kiện click cho nút "Chỉnh sửa"
-        editPostBtn.onclick = function() {
+        editPostBtn.onclick = function () {
             const upostId = document.getElementById('editPostId').value;
             const ucategory = document.getElementById('editPostCategory').value;
             const ucontent = document.getElementById('editPostContent').value;
@@ -173,9 +253,9 @@ openBtns.forEach(btn => {
             formData.append('postId', upostId);
             if (ucategory) formData.append('category', ucategory);
             formData.append('content', ucontent);
-            
+
             const files = document.getElementById('editImageInput').files;
-            for(let i=0; i<files.length; i++){
+            for (let i = 0; i < files.length; i++) {
                 formData.append('images', files[i]);
             }
 
@@ -218,7 +298,7 @@ let currentDeletePostId = null;
 
 deleteBtns.forEach(btn => {
 
-    btn.addEventListener("click",(e)=>{
+    btn.addEventListener("click", (e) => {
 
         e.stopPropagation();
 
@@ -231,50 +311,42 @@ deleteBtns.forEach(btn => {
 
 });
 
-closeDelete.onclick = () => deleteModal.style.display="none";
-cancelDelete.onclick = () => deleteModal.style.display="none";
+closeDelete.onclick = () => deleteModal.style.display = "none";
+cancelDelete.onclick = () => deleteModal.style.display = "none";
 
-deleteModal.addEventListener("click",(e)=>{
+deleteModal.addEventListener("click", (e) => {
 
-    if(e.target === deleteModal){
-        deleteModal.style.display="none";
+    if (e.target === deleteModal) {
+        deleteModal.style.display = "none";
     }
 
 });
 
 confirmDelete.onclick = () => {
 
-    if(currentDeletePostId){
-        const payload = new URLSearchParams();
-        payload.append('postId', currentDeletePostId);
+    if (currentDeletePostId) {
+        const formData = new FormData();
+        formData.append('postId', currentDeletePostId);
 
         fetch('/posts/delete', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-            },
-            body: payload,
-            credentials: 'same-origin'
-        }).then(async (response) => {
+            body: formData
+        }).then(response => {
             if (response.ok) {
-                if(currentCard){
+                if (currentCard) {
                     currentCard.remove();
                 }
-                deleteModal.style.display="none";
+                deleteModal.style.display = "none";
                 window.location.reload();
-                return;
+            } else {
+                alert("Có lỗi xảy ra khi xóa bài viết!");
             }
-
-            // Backend đang trả về text trong body; lấy thêm để biết chính xác vì sao 400.
-            const errText = await response.text().catch(() => "");
-            console.error("Lỗi xóa bài viết:", response.status, errText);
-            alert(errText ? `Có lỗi xảy ra khi xóa bài viết! ${errText}` : "Có lỗi xảy ra khi xóa bài viết!");
         }).catch(error => {
             console.error("Lỗi xóa bài viết:", error);
             alert("Lỗi kết nối.");
         });
     } else {
-        deleteModal.style.display="none";
+        deleteModal.style.display = "none";
     }
 
 };
@@ -302,10 +374,10 @@ closeComment.addEventListener("click", () => {
     commentModal.style.display = "none";
 });
 
-commentModal.addEventListener("click",(e)=>{
+commentModal.addEventListener("click", (e) => {
 
-    if(e.target === commentModal){
-        commentModal.style.display="none";
+    if (e.target === commentModal) {
+        commentModal.style.display = "none";
     }
 
 });
@@ -316,7 +388,7 @@ const closeLike = document.querySelector(".close-like");
 
 document.querySelectorAll(".likeCount").forEach(btn => {
 
-    btn.addEventListener("click",(e)=>{
+    btn.addEventListener("click", (e) => {
 
         e.stopPropagation();
 
@@ -326,14 +398,14 @@ document.querySelectorAll(".likeCount").forEach(btn => {
 
 });
 
-closeLike.onclick = () =>{
+closeLike.onclick = () => {
     likeModal.style.display = "none";
 }
 
-likeModal.addEventListener("click",(e)=>{
+likeModal.addEventListener("click", (e) => {
 
-    if(e.target === likeModal){
-        likeModal.style.display="none";
+    if (e.target === likeModal) {
+        likeModal.style.display = "none";
     }
 
 });
@@ -350,69 +422,255 @@ savedPosts.style.display = "none"
 
 tabs.forEach(tab => {
 
-    tab.addEventListener("click",()=>{
-        tabs.forEach(t=>t.classList.remove("active"))
+    tab.addEventListener("click", () => {
+        tabs.forEach(t => t.classList.remove("active"))
         tab.classList.add("active")
         const type = tab.dataset.type
-        if(type==="my"){
-            myPosts.style.display="grid"
-            topicGrid.style.display="none"
-            savedPosts.style.display="none"
+        if (type === "my") {
+            myPosts.style.display = "grid"
+            topicGrid.style.display = "none"
+            savedPosts.style.display = "none"
         }
-        if(type==="liked"){
-            myPosts.style.display="none"
-            topicGrid.style.display="grid"
-            savedPosts.style.display="none"
+        if (type === "liked") {
+            myPosts.style.display = "none"
+            topicGrid.style.display = "grid"
+            savedPosts.style.display = "none"
         }
     })
 
 })
 
-document.querySelectorAll(".topic-card").forEach(card=>{
+document.querySelectorAll(".topic-card").forEach(card => {
 
-    card.addEventListener("click",()=>{
+    card.addEventListener("click", async () => {
+        const collectionId = card.getAttribute("data-collection-id");
+        if (!collectionId) return;
 
-        topicGrid.style.display="none"
-        savedPosts.style.display="grid"
+        topicGrid.style.display = "none";
+        // Show a loading state
+        savedPosts.innerHTML = '<div style="text-align: center; padding: 20px; color: #888;">Đang tải...</div>';
+        savedPosts.style.display = "grid";
 
-    })
+        try {
+            const response = await fetch(`/api/collections/${collectionId}/posts`);
+            const posts = await response.json();
 
-})
+            if (response.ok) {
+                // Clear loading state
+                savedPosts.innerHTML = '';
 
-// modal xóa bài đã lưu
-const unsaveModal = document.getElementById("unsavePostModal")
-const closeUnsave = document.querySelector(".close-unsave")
-const cancelUnsave = document.querySelector(".btn-cancel-unsave")
-const confirmUnsave = document.querySelector(".btn-confirm-unsave")
+                // Keep the "Quay lại" (Back) button and the posts
+                const backBtn = document.createElement('div');
+                backBtn.style.cssText = "grid-column: 1 / -1; cursor: pointer; color: #e60023; font-weight: bold; margin-bottom: 20px;";
+                backBtn.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Quay lại thư mục';
+                backBtn.onclick = () => {
+                    savedPosts.style.display = "none";
+                    topicGrid.style.display = "grid";
+                };
+                savedPosts.appendChild(backBtn);
 
-let savedCard = null
+                if (posts.length === 0) {
+                    const emptyState = document.createElement('div');
+                    emptyState.style.cssText = "grid-column: 1 / -1; text-align: center; color: #888; padding: 20px;";
+                    emptyState.textContent = 'Chưa có bài viết nào trong thư mục này.';
+                    savedPosts.appendChild(emptyState);
+                    return;
+                }
 
-document.querySelectorAll(".unsave-post").forEach(btn => {
+                posts.forEach(post => {
+                    const postCard = document.createElement('div');
+                    postCard.className = 'card';
+                    let imageHtml = '';
+                    if (post.images && post.images.length > 1) {
+                        const imagesData = encodeURIComponent(JSON.stringify(post.images));
+                        imageHtml = `
+                            <div class="card-image-container" style="position: relative;" data-images="${imagesData}" data-current-index="0">
+                                <img src="${post.images[0].url}" alt="Post Image" class="img-main">
+                                <button class="prev-btn" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; z-index: 10;">&#10094;</button>
+                                <button class="next-btn" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; z-index: 10;">&#10095;</button>
+                                <div class="img-counter" style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); color: white; padding: 3px 10px; border-radius: 15px; font-size: 12px;">1 / ${post.images.length}</div>
+                            </div>
+                        `;
+                    } else {
+                        imageHtml = `<img src="${post.image}" alt="Post Image" class="img-main">`;
+                    }
 
-    btn.addEventListener("click",(e)=>{
+                    postCard.innerHTML = `
+                        ${imageHtml}
+                        <div class="card-body">
+                            <div class="card-title">${post.content.length > 40 ? post.content.substring(0, 40) + '...' : post.content}</div>
+                            <div class="card-desc"></div>
+                            <div class="author" style="display: flex; justify-content: space-between; align-items: center;">
+                                <div class="author-info">
+                                    <div class="author-avatar"><img src="${post.author.avatar}" style="width:100%; height:100%; border-radius:50%;" /></div>
+                                    <div class="author-name">${post.author.username}</div>
+                                </div>
+                                <i class="fa-solid fa-bookmark unsave-icon" style="cursor: pointer; color: #e60023; font-size: 1.2rem;" data-post-id="${post.id}" data-collection-id="${collectionId}" title="Xóa bài lưu"></i>
+                            </div>
+                            <div class="reaction">
+                                <span class="heart"><span class="heart-count">❤ ${post.likes}</span></span>
+                                <span><span class="comment-count">💬 ${post.comments}</span></span>
+                            </div>
+                        </div>
+                    `;
+                    savedPosts.appendChild(postCard);
+                });
 
-        e.stopPropagation()
+                // Attach event listeners for the newly created unsave buttons
+                attachUnsaveListeners();
 
-        savedCard = e.target.closest(".card")
+            } else {
+                savedPosts.innerHTML = `<div style="text-align: center; padding: 20px; color: red;">${posts.error || 'Lỗi khi tải bài viết'}</div>`;
+            }
 
-        unsaveModal.style.display = "flex"
+        } catch (error) {
+            console.error("Error fetching collection posts:", error);
+            savedPosts.innerHTML = '<div style="text-align: center; padding: 20px; color: red;">Lỗi kết nối máy chủ.</div>';
+        }
+    });
 
-    })
+});
 
-})
+function attachUnsaveListeners() {
+    document.querySelectorAll(".unsave-icon").forEach(icon => {
+        icon.addEventListener("click", async (e) => {
+            e.stopPropagation();
+            const savedCard = e.target.closest(".card");
+            const unsavePostId = icon.getAttribute("data-post-id");
+            const unsaveCollectionId = icon.getAttribute("data-collection-id");
 
-closeUnsave.onclick = ()=> unsaveModal.style.display="none"
-cancelUnsave.onclick = ()=> unsaveModal.style.display="none"
-unsaveModal.addEventListener("click",(e)=>{
-    if(e.target === unsaveModal){
-        unsaveModal.style.display="none"
+            if (unsavePostId && unsaveCollectionId) {
+                try {
+                    const response = await fetch(`/api/collections/${unsaveCollectionId}/toggle`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ postId: unsavePostId })
+                    });
+
+                    if (response.ok) {
+                        if (savedCard) {
+                            savedCard.remove();
+                        }
+                    } else {
+                        const data = await response.json();
+                        alert(data.error || "Có lỗi xảy ra");
+                    }
+                } catch (error) {
+                    alert("Lỗi kết nối");
+                }
+            }
+        });
+    });
+}
+
+// Initial attachment (though the elements might differ initially)
+attachUnsaveListeners();
+
+// Carousel Event Delegation for Saved Posts
+if (savedPosts) {
+    savedPosts.addEventListener("click", (e) => {
+        if (e.target.classList.contains("prev-btn")) {
+            e.stopPropagation();
+            updateCarousel(e.target, -1);
+        } else if (e.target.classList.contains("next-btn")) {
+            e.stopPropagation();
+            updateCarousel(e.target, 1);
+        }
+    });
+}
+
+function updateCarousel(btnElement, direction) {
+    const container = btnElement.closest(".card-image-container");
+    if (!container) return;
+
+    try {
+        const imagesData = JSON.parse(decodeURIComponent(container.getAttribute("data-images")));
+        if (!imagesData || imagesData.length <= 1) return;
+
+        let currentIndex = parseInt(container.getAttribute("data-current-index")) || 0;
+        currentIndex += direction;
+
+        // Loop around
+        if (currentIndex < 0) {
+            currentIndex = imagesData.length - 1;
+        } else if (currentIndex >= imagesData.length) {
+            currentIndex = 0;
+        }
+
+        container.setAttribute("data-current-index", currentIndex);
+
+        // Update Image
+        const imgMain = container.querySelector(".img-main");
+        if (imgMain) {
+            imgMain.src = imagesData[currentIndex].url;
+        }
+
+        // Update Counter
+        const counter = container.querySelector(".img-counter");
+        if (counter) {
+            counter.textContent = `${currentIndex + 1} / ${imagesData.length}`;
+        }
+
+        // Update Likes and Comments
+        const card = container.closest(".card");
+        if (card) {
+            const heartCount = card.querySelector(".heart-count");
+            if (heartCount && imagesData[currentIndex].likes !== undefined) {
+                heartCount.textContent = `❤ ${imagesData[currentIndex].likes}`;
+            }
+
+            const commentCount = card.querySelector(".comment-count");
+            if (commentCount && imagesData[currentIndex].comments !== undefined) {
+                commentCount.textContent = `💬 ${imagesData[currentIndex].comments}`;
+            }
+        }
+    } catch (error) {
+        console.error("Error updating carousel:", error);
     }
-})
+}
 
-confirmUnsave.onclick = ()=>{
-    if(savedCard){
-        savedCard.remove()
+// Carousel Event Delegation for My Posts
+if (myPosts) {
+    myPosts.addEventListener("click", (e) => {
+        if (e.target.classList.contains("prev-btn")) {
+            e.stopPropagation();
+            updateMyPostsCarousel(e.target, -1);
+        } else if (e.target.classList.contains("next-btn")) {
+            e.stopPropagation();
+            updateMyPostsCarousel(e.target, 1);
+        }
+    });
+}
+
+function updateMyPostsCarousel(btnElement, direction) {
+    const container = btnElement.closest(".card-image-container");
+    if (!container) return;
+
+    try {
+        const imageElements = container.querySelectorAll(".image-data span");
+        if (!imageElements || imageElements.length <= 1) return;
+
+        let currentIndex = parseInt(container.getAttribute("data-current-index")) || 0;
+        currentIndex += direction;
+
+        if (currentIndex < 0) {
+            currentIndex = imageElements.length - 1;
+        } else if (currentIndex >= imageElements.length) {
+            currentIndex = 0;
+        }
+
+        container.setAttribute("data-current-index", currentIndex);
+
+        const imgMain = container.querySelector(".img-main");
+        if (imgMain) {
+            imgMain.src = imageElements[currentIndex].getAttribute("data-url");
+        }
+
+        const counter = container.querySelector(".img-counter");
+        if (counter) {
+            counter.innerHTML = `${currentIndex + 1} / ${imageElements.length}`;
+        }
+    } catch (error) {
+        console.error("Error updating MyPosts carousel:", error);
     }
-    unsaveModal.style.display="none"
-
 }

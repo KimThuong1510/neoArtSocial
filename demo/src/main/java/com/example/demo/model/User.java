@@ -28,6 +28,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(nullable = false, unique = true)
     @Size(min = 5, max = 20, message = "Username must be between 5 and 20 characters")
     @Pattern(regexp = "^[a-z0-9.]+$", message = "Username must contain only lowercase letters, numbers, and dots")
@@ -48,6 +49,11 @@ public class User {
     @Size(min = 6, message = "Password must be at least 6 characters")
     // @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).*$", message = "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character")
     private String password;
+
+    @jakarta.persistence.Transient
+    private String confirmPassword;
+
+    private String avatar;
 
     @AssertTrue(message = "User must be at least 18 years old")
     public boolean isAdult() {

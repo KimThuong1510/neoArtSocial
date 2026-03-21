@@ -44,7 +44,7 @@
             </div>
         </div>
 
-        <div class="post-container">
+        <div class="post-container" th:data-post-id="${post.id}" id="mainPostContainer">
             <div class="post-back" onclick="window.history.back()" style="cursor: pointer;">
                 <i class="fa-solid fa-arrow-left"></i>
             </div>
@@ -94,7 +94,10 @@
                             <i class="fa-regular fa-comment"></i>
                             <span id="commentCount">0</span>
                         </div>
-                        <i id="saveIcon" class="fa-regular fa-bookmark"></i>
+                        <div class="right" style="display: flex; gap: 15px; align-items: center; justify-content: flex-end;">
+                            <i id="downloadIcon" class="fa-solid fa-download" style="cursor: pointer;" title="Tải ảnh này về máy"></i>
+                            <i id="saveIcon" th:class="${isSavedByUser ? 'fa-solid fa-bookmark' : 'fa-regular fa-bookmark'}" style="cursor: pointer;" title="Lưu bài viết vào thư mục" th:if="${#authentication.name != post.user.username}"></i>
+                        </div>
                     </div>
                     <!-- COMMENT INPUT -->
                     <div class="post-comment">
@@ -187,6 +190,77 @@
 
     </div>
 
+</div>
+
+<!-- Save to Collection Modal -->
+<div class="modal-overlay" id="saveCollectionModal" style="display: none;">
+    <div class="modal" style="width: 350px; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+        <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #eee;">
+            <span style="font-weight: bold;">Lưu vào thư mục</span>
+            <i class="fa-solid fa-xmark" id="closeSaveModalBtn" style="cursor: pointer;"></i>
+        </div>
+        <div class="modal-body" style="padding: 15px; display: flex; flex-direction: column; gap: 10px; max-height: 300px; overflow-y: auto;">
+            <div id="collectionsList">
+                <p style="text-align: center; color: #888; font-size: 14px;">Đang tải thư mục...</p>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 10px 0;">
+
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <label style="font-size: 14px; font-weight: bold;">Tạo thư mục mới</label>
+                <div style="display: flex; gap: 5px;">
+                    <input type="text" id="newCollectionName" placeholder="Tên thư mục mới..." style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <button id="createCollectionBtn" style="padding: 8px 12px; border: none; background: #e60023; color: white; border-radius: 4px; cursor: pointer;">Tạo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal thêm bài viết -->
+<div class="modal-overlay" id="createPostModal" style="display: none;">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="user-info">
+                <img src="https://i.pravatar.cc/100?u=9" alt="User">
+                <span sec:authentication="name">username</span>
+            </div>
+            <i class="fa-solid fa-xmark close-modal" style="cursor: pointer;"></i>
+        </div>
+
+        <form th:action="@{/posts/create}" method="post" enctype="multipart/form-data">
+            <div class="modal-body">
+                <div class="modal-row">
+                    <label>Chủ đề:</label>
+                    <select name="topic" required>
+                        <option value="" disabled selected>-- Chọn chủ đề --</option>
+                        <option th:each="topic : ${topics}"
+                                th:value="${topic.code}"
+                                th:text="${topic.name}">
+                        </option>
+                    </select>
+
+                    <label class="upload-btn" style="cursor: pointer;">
+                        <i class="fa-regular fa-image"></i> Tải ảnh lên
+                        <input type="file"
+                               name="images"
+                               id="imageInput"
+                               accept="image/*"
+                               multiple hidden required>
+                    </label>
+                </div>
+
+                <textarea name="content"
+                          placeholder="Mô tả ảnh của bạn ..." style="width: 100%; min-height: 100px; padding: 10px; border: 1px solid #ddd;"></textarea>
+
+                <div class="image-preview photo-grid" id="imagePreview" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px;"></div>
+            </div>
+
+            <div class="modal-footer" style="display: flex; justify-content: flex-end; padding-top: 15px; border-top: 1px solid #eee;">
+                <button type="submit" class="btn-post" style="padding: 10px 20px; background: #e60023; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Đăng</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 </body>
