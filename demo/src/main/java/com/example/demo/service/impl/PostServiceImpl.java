@@ -5,14 +5,14 @@ import com.example.demo.model.PostImage;
 import com.example.demo.model.User;
 import com.example.demo.repository.PostImageRepository;
 import com.example.demo.repository.PostRepository;
+import com.example.demo.repository.SavedPostRepository;
 import com.example.demo.repository.TopicRepository;
 import com.example.demo.service.PostService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.jdbc.core.JdbcTemplate;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -34,6 +34,12 @@ public class PostServiceImpl implements PostService {
 
     @Autowired
     private TopicRepository topicRepository;
+
+    @Autowired
+    private SavedPostRepository savedPostRepository;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Override
     @Transactional
@@ -144,6 +150,10 @@ public class PostServiceImpl implements PostService {
         if (!post.getUser().getId().equals(user.getId())) {
             throw new RuntimeException("Unauthorized to delete this post");
         }
+
+        savedPostRepository.deleteByPost_Id(postId);
+        jdbcTemplate.update("DELETE FROM post_likes WHERE post_id = ?", postId);
+        jdbcTemplate.update("DELETE FROM comments WHERE post_id = ?", postId);
 
         postRepository.delete(post);
     }

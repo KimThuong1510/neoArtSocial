@@ -348,22 +348,28 @@ deleteModal.addEventListener("click", (e) => {
 confirmDelete.onclick = () => {
 
     if (currentDeletePostId) {
-        const formData = new FormData();
-        formData.append('postId', currentDeletePostId);
+        const payload = new URLSearchParams();
+        payload.append('postId', currentDeletePostId);
 
         fetch('/posts/delete', {
             method: 'POST',
-            body: formData
-        }).then(response => {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            },
+            body: payload,
+            credentials: 'same-origin'
+        }).then(async (response) => {
             if (response.ok) {
                 if (currentCard) {
                     currentCard.remove();
                 }
                 deleteModal.style.display = "none";
                 window.location.reload();
-            } else {
-                alert("Có lỗi xảy ra khi xóa bài viết!");
+                return;
             }
+            const errText = await response.text().catch(() => "");
+            console.error("Lỗi xóa bài viết:", response.status, errText);
+            alert(errText ? `Có lỗi xảy ra khi xóa bài viết! ${errText}` : "Có lỗi xảy ra khi xóa bài viết!");
         }).catch(error => {
             console.error("Lỗi xóa bài viết:", error);
             alert("Lỗi kết nối.");

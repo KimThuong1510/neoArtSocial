@@ -56,6 +56,9 @@ public class ProfileController {
             return "redirect:/logout";
         }
         User user = userOpt.get();
+        if (user.getAvatar() != null && !avatarFileExists(user.getAvatar())) {
+            user.setAvatar(null);
+        }
         List<Post> myPosts = postRepository.findByUser(user);
         List<SavedCollection> collections = savedCollectionService.getUserCollections(username);
 
@@ -85,6 +88,18 @@ public class ProfileController {
         model.addAttribute("topics", topicRepository.findAll());
 
         return "profilePage/profilePage";
+    }
+
+    private boolean avatarFileExists(String avatarPath) {
+        if (avatarPath == null || !avatarPath.startsWith("/uploads/")) {
+            return false;
+        }
+
+        String relativeUploadPath = avatarPath.substring("/uploads/".length());
+        Path currentUploads = Paths.get("uploads").resolve(relativeUploadPath).toAbsolutePath().normalize();
+        Path parentUploads = Paths.get("..", "uploads").resolve(relativeUploadPath).toAbsolutePath().normalize();
+
+        return Files.exists(currentUploads) || Files.exists(parentUploads);
     }
 
     @PostMapping("/update")
