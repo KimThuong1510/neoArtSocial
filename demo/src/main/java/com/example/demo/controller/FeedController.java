@@ -4,6 +4,7 @@ import com.example.demo.model.Post;
 import com.example.demo.repository.PostRepository;
 import com.example.demo.repository.SavedPostRepository;
 import com.example.demo.repository.TopicRepository;
+import com.example.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -26,10 +27,17 @@ public class FeedController {
     @Autowired
     private SavedPostRepository savedPostRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @GetMapping("")
-    public String feed(Model model) {
+    public String feed(Model model, Authentication authentication) {
         model.addAttribute("posts", postRepository.findAll());
         model.addAttribute("topics", topicRepository.findAll());
+        if (authentication != null && authentication.isAuthenticated() && !authentication.getName().equals("anonymousUser")) {
+            userRepository.findByUsername(authentication.getName())
+                    .ifPresent(currentUser -> model.addAttribute("currentUser", currentUser));
+        }
         return "feedPage/feedHome";
     }
 
@@ -43,6 +51,8 @@ public class FeedController {
         boolean isSavedByUser = false;
         if (authentication != null && authentication.isAuthenticated() && !authentication.getName().equals("anonymousUser")) {
             isSavedByUser = savedPostRepository.existsByCollectionUserUsernameAndPostId(authentication.getName(), postId);
+            userRepository.findByUsername(authentication.getName())
+                    .ifPresent(currentUser -> model.addAttribute("currentUser", currentUser));
         }
         model.addAttribute("post", post);
         model.addAttribute("isSavedByUser", isSavedByUser);

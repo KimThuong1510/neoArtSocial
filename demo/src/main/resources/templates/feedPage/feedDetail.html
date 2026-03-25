@@ -13,7 +13,7 @@
 <div class="app-container">
     <aside class="sidebar-left">
         <a class="profile-top" th:href="@{/profile}">
-            <img src="https://i.pravatar.cc/150?u=9" alt="User">
+            <img id="avatarImg" th:src="${currentUser != null and currentUser.avatar != null ? currentUser.avatar : 'https://i.pravatar.cc/150?u=9'}">
         </a>
 
         <div class="nav-icons-group">
@@ -101,7 +101,7 @@
                     </div>
                     <!-- COMMENT INPUT -->
                     <div class="post-comment">
-                        <img src="https://i.pravatar.cc/40">
+                        <img th:src="${currentUser != null and currentUser.avatar != null ? currentUser.avatar : 'https://i.pravatar.cc/40'}">
                         <input placeholder="Bạn sẽ nhận xét gì...">
                         <i class="fa-regular fa-paper-plane"></i>
                     </div>
@@ -110,7 +110,7 @@
                 <div class="post-right">
                     <!-- USER + MÔ TẢ -->
                     <div class="post-user">
-                        <img class="avatar" src="https://i.pravatar.cc/100">
+                        <img class="avatar" th:src="${currentUser != null and currentUser.avatar != null ? currentUser.avatar : 'https://i.pravatar.cc/100'}">
                         <div>
                             <strong th:text="${post.user.username}">Username</strong>
                         </div>
@@ -222,7 +222,7 @@
     <div class="modal">
         <div class="modal-header">
             <div class="user-info">
-                <img src="https://i.pravatar.cc/100?u=9" alt="User">
+                <img th:src="${currentUser != null and currentUser.avatar != null ? currentUser.avatar : 'https://i.pravatar.cc/100?u=9'}" alt="User">
                 <span sec:authentication="name">username</span>
             </div>
             <i class="fa-solid fa-xmark close-modal" style="cursor: pointer;"></i>

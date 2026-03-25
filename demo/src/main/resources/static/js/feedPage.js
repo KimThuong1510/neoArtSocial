@@ -257,3 +257,51 @@ async function toggleSavePost(collectionId, postId) {
         alert("Lỗi kết nối máy chủ");
     }
 }
+
+// ===== NOTIFICATION =====
+const bellIcon = document.querySelector('.fa-bell');
+const notiModal = document.getElementById('notiModal');
+
+// OPEN / CLOSE
+if (bellIcon) {
+    bellIcon.addEventListener('click', (e) => {
+        e.stopPropagation();
+        notiModal.style.display =
+            notiModal.style.display === 'block' ? 'none' : 'block';
+    });
+}
+
+// CLICK OUTSIDE => CLOSE
+document.addEventListener('click', (e) => {
+    if (!notiModal.contains(e.target) && !bellIcon.contains(e.target)) {
+        notiModal.style.display = 'none';
+    }
+});
+
+// ===== NOTIFICATION TOGGLE =====
+const bellIcon = document.querySelector('.fa-bell');
+const notiModal = document.getElementById('notiModal');
+
+// Click icon bell
+if (bellIcon && notiModal) {
+    bellIcon.addEventListener('click', (e) => {
+        e.stopPropagation(); // tránh click lan ra ngoài
+
+        const isOpen = notiModal.style.display === 'block';
+
+        // toggle
+        notiModal.style.display = isOpen ? 'none' : 'block';
+    });
+}
+
+// Click ra ngoài => đóng modal
+document.addEventListener('click', (e) => {
+    if (
+        notiModal &&
+        bellIcon &&
+        !notiModal.contains(e.target) &&
+        !bellIcon.contains(e.target)
+    ) {
+        notiModal.style.display = 'none';
+    }
+});

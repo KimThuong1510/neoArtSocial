@@ -13,7 +13,7 @@
 <div class="app-container">
     <aside class="sidebar-left">
         <a class="profile-top" th:href="@{/profile}">
-            <img src="https://i.pravatar.cc/150?u=9" alt="User">
+            <img id="avatarImg" th:src="${currentUser != null and currentUser.avatar != null ? currentUser.avatar : 'https://i.pravatar.cc/150?u=9'}">
         </a>
 
         <div class="nav-icons-group">
@@ -93,7 +93,7 @@
     <div class="modal">
         <div class="modal-header">
             <div class="user-info">
-                <img src="https://i.pravatar.cc/100?u=9" alt="User">
+                <img th:src="${currentUser != null and currentUser.avatar != null ? currentUser.avatar : 'https://i.pravatar.cc/100?u=9'}" alt="User">
                 <span sec:authentication="name">username</span>
             </div>
             <i class="fa-solid fa-xmark close-modal"></i>
@@ -134,6 +134,70 @@
             </div>
 
         </form>
+
+    </div>
+</div>
+
+<!-- NOTIFICATION MODAL -->
+<div class="noti-modal" id="notiModal">
+    <div class="noti-box">
+
+        <!-- HEADER -->
+        <div class="noti-header">
+            <span>Thông báo</span>
+            <a href="#">Đánh dấu tất cả đã đọc</a>
+        </div>
+
+        <!-- TABS -->
+        <div class="noti-tabs">
+            <span class="tab active" data-type="all">Tất cả</span>
+            <span class="tab" data-type="like">Thích</span>
+            <span class="tab" data-type="comment">Bình luận</span>
+        </div>
+
+        <!-- LIST -->
+        <div class="noti-list" id="notiList">
+            <!-- ITEM -->
+            <div class="noti-item" data-type="comment">
+                <img src="https://i.pravatar.cc/40?img=1">
+                <div class="content">
+                    <b>George Jose</b> đã bình luận vào bài viết của bạn
+                    <div class="time">2h trước</div>
+                </div>
+            </div>
+
+            <div class="noti-item" data-type="like">
+                <img src="https://i.pravatar.cc/40?img=2">
+                <div class="content">
+                    <b>Rose</b> và 10 người khác đã thích bài viết của bạn
+                    <div class="time">3h trước</div>
+                </div>
+            </div>
+
+            <div class="noti-item" data-type="message">
+                <img src="https://i.pravatar.cc/40?img=3">
+                <div class="content">
+                    <b>Phạm Tiến Dũng</b> đã gửi tin nhắn cho bạn
+                    <div class="time">4h trước</div>
+                </div>
+            </div>
+
+            <div class="noti-item" data-type="message">
+                <img src="https://i.pravatar.cc/40?img=4">
+                <div class="content">
+                    <b>Linda</b> đã gửi tin nhắn cho bạn
+                    <div class="time">6h trước</div>
+                </div>
+            </div>
+
+            <div class="noti-item" data-type="message">
+                <img src="https://i.pravatar.cc/40?img=5">
+                <div class="content">
+                    <b>Trọng Anh Ngược</b> muốn trò chuyện với bạn
+                    <div class="time">10h trước</div>
+                </div>
+            </div>
+        </div>
 
     </div>
 </div>

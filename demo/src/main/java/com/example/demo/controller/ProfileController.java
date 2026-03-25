@@ -30,7 +30,7 @@ import java.util.*;
 @RequestMapping("/profile")
 public class ProfileController {
 
-    private static final String AVATAR_DIR = "uploads/avatars/";
+    private static final String AVATAR_DIR = "uploads/avatar/";
 
     @Autowired
     private UserRepository userRepository;
@@ -130,7 +130,7 @@ public class ProfileController {
                 }
                 Path filePath = uploadPath.resolve(fileName);
                 Files.write(filePath, avatar.getBytes());
-                user.setAvatar("/uploads/avatars/" + fileName);
+                user.setAvatar("/uploads/avatar/" + fileName);
             }
 
             userRepository.save(user);
@@ -139,6 +139,41 @@ public class ProfileController {
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             response.put("error", "Đã xảy ra lỗi khi cập nhật!");
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
+    @PostMapping("/avatar")
+    public ResponseEntity<?> uploadAvatar(Authentication authentication,
+                                          @RequestParam("avatar") MultipartFile avatar) {
+        Map<String, String> response = new HashMap<>();
+        try {
+            if (avatar == null || avatar.isEmpty()) {
+                response.put("error", "Vui lòng chọn ảnh avatar.");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            String currentUsername = authentication.getName();
+            User user = userRepository.findByUsername(currentUsername).orElseThrow();
+
+            String fileName = UUID.randomUUID() + "_" + avatar.getOriginalFilename();
+            Path uploadPath = Paths.get(AVATAR_DIR);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            Path filePath = uploadPath.resolve(fileName);
+            Files.write(filePath, avatar.getBytes());
+
+            String avatarUrl = "/uploads/avatar/" + fileName;
+            user.setAvatar(avatarUrl);
+            userRepository.save(user);
+
+            response.put("message", "Cập nhật avatar thành công!");
+            response.put("avatarUrl", avatarUrl);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("error", "Không thể tải avatar lên. Vui lòng thử lại.");
             return ResponseEntity.internalServerError().body(response);
         }
     }

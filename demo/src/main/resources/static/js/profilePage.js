@@ -148,6 +148,28 @@ avatarInput.addEventListener("change", (e) => {
         }
 
         reader.readAsDataURL(file);
+
+        // Upload ngay khi chọn để đảm bảo DB luôn cập nhật đường dẫn avatar mới.
+        const formData = new FormData();
+        formData.append("avatar", file);
+        fetch("/profile/avatar", {
+            method: "POST",
+            body: formData
+        })
+            .then(async response => {
+                const data = await response.json();
+                if (!response.ok) {
+                    alert(data.error || "Không thể cập nhật avatar.");
+                    return;
+                }
+                if (data.avatarUrl) {
+                    avatarImg.src = data.avatarUrl;
+                }
+            })
+            .catch(error => {
+                console.error("Lỗi upload avatar:", error);
+                alert("Lỗi kết nối khi tải avatar.");
+            });
     }
 
 });

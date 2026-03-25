@@ -1,10 +1,423 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>NeoArt - Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/chatPage/chat.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
+
 <body>
 
+<div class="app-container">
+    <aside class="sidebar-left">
+        <div class="profile-top">
+            <img src="https://i.pravatar.cc/150?u=9" alt="User">
+        </div>
+
+        <div class="nav-icons-group">
+            <i class="fa-solid fa-house active"></i>
+            <i class="fa-solid fa-comment"></i>
+            <i class="fa-solid fa-bell"></i>
+        </div>
+
+        <div class="add-bottom logout-btn">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+
+        </div>
+
+    </aside>
+    <div class="chat-app">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <!-- Search Bar with Create Group Button -->
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Tìm kiếm">
+                <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <button class="create-group-icon-btn" id="create-group-icon-btn" title="Tạo nhóm">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" data-tab="direct">Nhắn tin</button>
+                <button class="tab" data-tab="groups">Nhóm</button>
+                <button class="tab" data-tab="requests">Tin nhắn chờ</button>
+            </div>
+
+            <!-- Tab Content: Direct Messages -->
+            <div class="tab-content active" id="tab-direct">
+                <div class="chat-list" id="direct-messages-list"></div>
+            </div>
+
+            <!-- Tab Content: Groups -->
+            <div class="tab-content" id="tab-groups">
+                <div class="chat-list" id="groups-list"></div>
+            </div>
+
+            <!-- Tab Content: Message Requests -->
+            <div class="tab-content" id="tab-requests">
+                <div class="chat-list" id="requests-list"></div>
+            </div>
+        </aside>
+
+        <!-- Chat Window -->
+        <main class="chat-window">
+            <div class="empty-state" id="empty-state">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <p>Chọn một cuộc trò chuyện để bắt đầu</p>
+            </div>
+
+            <div class="chat-container" id="chat-container" style="display: none;">
+                <!-- Chat Header -->
+                <header class="chat-header">
+                    <div class="chat-header-info">
+                        <img src="" alt="" class="header-avatar clickable-avatar" id="header-avatar" data-user-id="">
+                        <div class="header-details">
+                            <h3 id="header-name">Nguyễn Văn A</h3>
+                            <span class="status online" id="header-status">Đang hoạt động</span>
+                        </div>
+                    </div>
+                    <div class="chat-header-actions">
+                        <!-- Menu 3 dots button (only for groups) -->
+                        <div class="menu-container" id="menu-container" style="display: none;">
+                            <button class="icon-btn" id="menu-btn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                     stroke-width="2">
+                                    <circle cx="12" cy="5" r="1" fill="currentColor"></circle>
+                                    <circle cx="12" cy="12" r="1" fill="currentColor"></circle>
+                                    <circle cx="12" cy="19" r="1" fill="currentColor"></circle>
+                                </svg>
+                            </button>
+                            <!-- Dropdown Menu -->
+                            <div class="dropdown-menu" id="dropdown-menu">
+                                <button class="dropdown-item" id="manage-members-btn">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                         stroke-width="2">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="9" cy="7" r="4"></circle>
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                    </svg>
+                                    Quản lý thành viên
+                                </button>
+                                <button class="dropdown-item" id="rename-group-btn">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                         stroke-width="2">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                    </svg>
+                                    Đổi tên nhóm
+                                </button>
+                                <button class="dropdown-item" id="change-group-avatar-btn">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                         stroke-width="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                        <polyline points="21 15 16 10 5 21"></polyline>
+                                    </svg>
+                                    Đổi ảnh đại diện nhóm
+                                </button>
+                                <button class="dropdown-item danger" id="delete-group-btn">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                         stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path
+                                                d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                        </path>
+                                    </svg>
+                                    Xóa nhóm
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Messages Area -->
+                <div class="messages-area" id="messages-area"></div>
+
+                <!-- Image Preview Area -->
+                <div class="image-preview-area" id="image-preview-area" style="display:none;">
+                    <div class="image-preview-inner">
+                        <img id="image-preview-thumb" src="" alt="preview">
+                        <button class="remove-preview-btn" id="remove-preview-btn">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2.5">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Input Area -->
+                <div class="input-area">
+                    <!-- Hidden file input for image upload -->
+                    <input type="file" id="image-upload-input" accept="image/*" style="display:none;">
+
+                    <!-- Image Upload Button -->
+                    <button class="input-action-btn" id="image-upload-btn" title="Gửi ảnh">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                    </button>
+
+                    <!-- Emoji Button -->
+                    <button class="input-action-btn" id="emoji-btn" title="Emoji">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+                            <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                            <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                        </svg>
+                    </button>
+
+                    <!-- Emoji Picker Panel -->
+                    <div class="emoji-picker" id="emoji-picker" style="display:none;"></div>
+
+                    <input type="text" class="message-input" id="message-input" placeholder="Nhập tin nhắn...">
+                    <button class="send-btn" id="send-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+</div>
+
+
+<!-- Modal: Create Group -->
+<div class="modal" id="create-group-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Tạo nhóm mới</h2>
+            <button class="close-modal" data-modal="create-group-modal">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Tên nhóm</label>
+                <input type="text" class="form-input" id="group-name-input" placeholder="Nhập tên nhóm">
+            </div>
+            <div class="form-group">
+                <label>Thêm thành viên</label>
+                <input type="text" class="form-input" id="member-search-input" placeholder="Tìm kiếm thành viên">
+            </div>
+            <div class="members-list" id="members-list"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" data-modal="create-group-modal">Hủy</button>
+            <button class="btn btn-primary" id="submit-group-btn">Tạo nhóm</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Rename Group -->
+<div class="modal" id="rename-group-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Đổi tên nhóm</h2>
+            <button class="close-modal" data-modal="rename-group-modal">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Tên nhóm mới</label>
+                <input type="text" class="form-input" id="rename-group-input" placeholder="Nhập tên mới">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" data-modal="rename-group-modal">Hủy</button>
+            <button class="btn btn-primary" id="submit-rename-btn">Lưu</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Change Group Avatar -->
+<div class="modal" id="change-avatar-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Đổi ảnh đại diện nhóm</h2>
+            <button class="close-modal" data-modal="change-avatar-modal">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="avatar-upload-area" id="avatar-upload-area">
+                <div class="avatar-preview-wrapper">
+                    <img id="avatar-preview-img" src="" alt="Preview" style="display:none;">
+                    <div class="avatar-placeholder" id="avatar-placeholder">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="1.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                        <p>Chọn ảnh hoặc kéo thả vào đây</p>
+                    </div>
+                </div>
+                <input type="file" id="group-avatar-input" accept="image/*" style="display:none;">
+                <button class="btn btn-secondary" id="choose-avatar-btn" style="margin-top:12px;">Chọn ảnh</button>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" data-modal="change-avatar-modal">Hủy</button>
+            <button class="btn btn-primary" id="submit-avatar-btn" disabled>Lưu</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Manage Members -->
+<div class="modal" id="manage-members-modal">
+    <div class="modal-content modal-content-wide">
+        <div class="modal-header">
+            <h2>Quản lý thành viên</h2>
+            <button class="close-modal" data-modal="manage-members-modal">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <!-- Current Members -->
+            <div class="form-group">
+                <label>Thành viên hiện tại</label>
+                <div class="current-members-list" id="current-members-list"></div>
+            </div>
+            <!-- Add New Members -->
+            <div class="form-group">
+                <label>Thêm thành viên mới</label>
+                <input type="text" class="form-input" id="manage-member-search-input" placeholder="Tìm kiếm">
+                <div class="members-list" id="add-members-list"></div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" data-modal="manage-members-modal">Đóng</button>
+            <button class="btn btn-primary" id="submit-manage-members-btn">Lưu thay đổi</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Delete Group Confirm -->
+<div class="modal" id="delete-group-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Xóa nhóm</h2>
+            <button class="close-modal" data-modal="delete-group-modal">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="delete-warning">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#dc3545" stroke-width="2">
+                    <path
+                            d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
+                    </path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+                <p>Hành động này <strong>không thể hoàn tác</strong>. Để xác nhận, hãy nhập tên nhóm:</p>
+                <p class="delete-group-name-hint" id="delete-group-name-hint"></p>
+            </div>
+            <div class="form-group" style="margin-top:16px;">
+                <input type="text" class="form-input" id="delete-confirm-input"
+                       placeholder="Nhập tên nhóm để xác nhận">
+                <p class="error-msg" id="delete-error-msg" style="display:none;">Tên nhóm không khớp. Vui lòng thử
+                    lại.</p>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" data-modal="delete-group-modal">Hủy</button>
+            <button class="btn btn-danger" id="submit-delete-btn">Xóa nhóm</button>
+        </div>
+    </div>
+</div>
+
+<div id="image-lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Xem ảnh">
+    <!-- Nút đóng -->
+    <button class="lightbox-close" id="lightbox-close" title="Đóng (Esc)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+    </button>
+
+    <!-- Thanh công cụ: zoom controls -->
+    <div class="lightbox-toolbar">
+        <button class="lightbox-tool-btn" id="lightbox-zoom-out" title="Thu nhỏ (-)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                <line x1="8" y1="11" x2="14" y2="11"></line>
+            </svg>
+        </button>
+        <span class="lightbox-zoom-label" id="lightbox-zoom-label">100%</span>
+        <button class="lightbox-tool-btn" id="lightbox-zoom-in" title="Phóng to (+)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                <line x1="11" y1="8" x2="11" y2="14"></line>
+                <line x1="8" y1="11" x2="14" y2="11"></line>
+            </svg>
+        </button>
+        <button class="lightbox-tool-btn" id="lightbox-zoom-reset" title="Reset zoom (0)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                <path d="M3 3v5h5"></path>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Wrapper bắt click outside -->
+    <div class="lightbox-backdrop" id="lightbox-backdrop">
+        <!-- Container ảnh — click vào đây KHÔNG đóng -->
+        <div class="lightbox-img-container" id="lightbox-img-container">
+            <img class="lightbox-img" id="lightbox-img" src="" alt="Ảnh phóng to" draggable="false">
+        </div>
+    </div>
+
+    <!-- Hint double-click -->
+    <div class="lightbox-hint" id="lightbox-hint">Double-click để zoom · Scroll để zoom · Kéo để di chuyển</div>
+</div>
+
 </body>
+<script th:src="@{/js/chat.js}"></script>
+
 </html>
