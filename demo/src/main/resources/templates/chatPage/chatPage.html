@@ -12,37 +12,20 @@
 <body>
 
 <div class="app-container">
-    <aside class="sidebar-left">
-        <div class="profile-top">
-            <img src="https://i.pravatar.cc/150?u=9" alt="User">
-        </div>
-
-        <div class="nav-icons-group">
-            <i class="fa-solid fa-house active"></i>
-            <i class="fa-solid fa-comment"></i>
-            <i class="fa-solid fa-bell"></i>
-        </div>
-
-        <div class="add-bottom logout-btn">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i>
-
-        </div>
-
-    </aside>
+    <div th:replace="~{common/sidebar-left :: sidebar-left}"></div>
     <div class="chat-app">
-
         <!-- Sidebar -->
         <aside class="sidebar">
-            <!-- Search Bar with Create Group Button -->
             <div class="search-container">
                 <input type="text" class="search-input" placeholder="Tìm kiếm">
-                <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     stroke-width="2">
+                <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
                     <circle cx="11" cy="11" r="8"></circle>
                     <path d="m21 21-4.35-4.35"></path>
                 </svg>
                 <button class="create-group-icon-btn" id="create-group-icon-btn" title="Tạo nhóm">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2">
                         <line x1="12" y1="5" x2="12" y2="19"></line>
                         <line x1="5" y1="12" x2="19" y2="12"></line>
                     </svg>
@@ -85,7 +68,8 @@
                 <!-- Chat Header -->
                 <header class="chat-header">
                     <div class="chat-header-info">
-                        <img src="" alt="" class="header-avatar clickable-avatar" id="header-avatar" data-user-id="">
+                        <img src="" alt="" class="header-avatar clickable-avatar" id="header-avatar"
+                             data-user-id="">
                         <div class="header-details">
                             <h3 id="header-name">Nguyễn Văn A</h3>
                             <span class="status online" id="header-status">Đang hoạt động</span>
@@ -105,8 +89,8 @@
                             <!-- Dropdown Menu -->
                             <div class="dropdown-menu" id="dropdown-menu">
                                 <button class="dropdown-item" id="manage-members-btn">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                         stroke-width="2">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                         stroke="currentColor" stroke-width="2">
                                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                                         <circle cx="9" cy="7" r="4"></circle>
                                         <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
@@ -115,16 +99,16 @@
                                     Quản lý thành viên
                                 </button>
                                 <button class="dropdown-item" id="rename-group-btn">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                         stroke-width="2">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                         stroke="currentColor" stroke-width="2">
                                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                                     </svg>
                                     Đổi tên nhóm
                                 </button>
                                 <button class="dropdown-item" id="change-group-avatar-btn">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                         stroke-width="2">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                         stroke="currentColor" stroke-width="2">
                                         <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                                         <circle cx="8.5" cy="8.5" r="1.5"></circle>
                                         <polyline points="21 15 16 10 5 21"></polyline>
@@ -132,11 +116,10 @@
                                     Đổi ảnh đại diện nhóm
                                 </button>
                                 <button class="dropdown-item danger" id="delete-group-btn">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                         stroke-width="2">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                         stroke="currentColor" stroke-width="2">
                                         <polyline points="3 6 5 6 21 6"></polyline>
-                                        <path
-                                                d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
                                         </path>
                                     </svg>
                                     Xóa nhóm
@@ -370,6 +353,9 @@
     </div>
 </div>
 
+<!-- ==========================================
+ IMAGE LIGHTBOX OVERLAY
+ ========================================== -->
 <div id="image-lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Xem ảnh">
     <!-- Nút đóng -->
     <button class="lightbox-close" id="lightbox-close" title="Đóng (Esc)">

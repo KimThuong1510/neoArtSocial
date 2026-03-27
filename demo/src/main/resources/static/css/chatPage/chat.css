@@ -23,12 +23,13 @@ body {
    ========================================== */
 
 .chat-app {
+    flex: 1;
     display: flex;
     height: 100vh;
     overflow: hidden;
     padding: 20px;
     gap: 20px;
-    background: #e8e8e8;
+    background: #fce4ec;
 }
 
 /* ==========================================

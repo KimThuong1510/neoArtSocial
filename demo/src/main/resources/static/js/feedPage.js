@@ -90,17 +90,17 @@ document.querySelectorAll(".fa-regular .fa-heart").forEach(btn => {
 
 });
 
-closeLike.onclick = () =>{
-    likeModal.style.display = "none";
-}
+//closeLike.onclick = () =>{
+//    likeModal.style.display = "none";
+//}
 
-likeModal.addEventListener("click",(e)=>{
-
-    if(e.target === likeModal){
-        likeModal.style.display="none";
-    }
-
-});
+//nonelikeModal.addEventListener("click",(e)=>{
+//
+//    if(e.target === likeModal){
+//        likeModal.style.display="none";
+//    }
+//
+//});
 
 // --- Modal Save Collection ---
 const saveIcon = document.getElementById('saveIcon');
@@ -258,50 +258,54 @@ async function toggleSavePost(collectionId, postId) {
     }
 }
 
-// ===== NOTIFICATION =====
-const bellIcon = document.querySelector('.fa-bell');
-const notiModal = document.getElementById('notiModal');
-
-// OPEN / CLOSE
-if (bellIcon) {
-    bellIcon.addEventListener('click', (e) => {
-        e.stopPropagation();
-        notiModal.style.display =
-            notiModal.style.display === 'block' ? 'none' : 'block';
-    });
-}
-
-// CLICK OUTSIDE => CLOSE
-document.addEventListener('click', (e) => {
-    if (!notiModal.contains(e.target) && !bellIcon.contains(e.target)) {
-        notiModal.style.display = 'none';
-    }
-});
-
 // ===== NOTIFICATION TOGGLE =====
-const bellIcon = document.querySelector('.fa-bell');
-const notiModal = document.getElementById('notiModal');
+//const bellIcon = document.querySelector('.fa-bell');
+//const notiModal = document.getElementById('notiModal');
+//
+//// Click icon bell
+//if (bellIcon && notiModal) {
+//    bellIcon.addEventListener('click', (e) => {
+//        e.stopPropagation(); // tránh click lan ra ngoài
+//
+//        const isOpen = notiModal.style.display === 'block';
+//
+//        // toggle
+//        notiModal.style.display = isOpen ? 'none' : 'block';
+//    });
+//}
+//
+//// Click ra ngoài => đóng modal
+//document.addEventListener('click', (e) => {
+//    if (
+//        notiModal &&
+//        bellIcon &&
+//        !notiModal.contains(e.target) &&
+//        !bellIcon.contains(e.target)
+//    ) {
+//        notiModal.style.display = 'none';
+//    }
+//});
 
-// Click icon bell
-if (bellIcon && notiModal) {
-    bellIcon.addEventListener('click', (e) => {
-        e.stopPropagation(); // tránh click lan ra ngoài
+document.addEventListener('DOMContentLoaded', () => {
+    const bellIcon = document.querySelector('.nav-icons-group .fa-bell');
+    const notiModal = document.getElementById('notiModal');
 
-        const isOpen = notiModal.style.display === 'block';
+    if (bellIcon && notiModal) {
+        // Toggle modal khi click vào icon chuông
+        bellIcon.addEventListener('click', (e) => {
+            console.log('Bell clicked');
+            e.stopPropagation();
+            notiModal.classList.toggle('show');
+        });
 
-        // toggle
-        notiModal.style.display = isOpen ? 'none' : 'block';
-    });
-}
-
-// Click ra ngoài => đóng modal
-document.addEventListener('click', (e) => {
-    if (
-        notiModal &&
-        bellIcon &&
-        !notiModal.contains(e.target) &&
-        !bellIcon.contains(e.target)
-    ) {
-        notiModal.style.display = 'none';
+        // Đóng modal khi click ra ngoài
+        document.addEventListener('click', (e) => {
+            // Kiểm tra nếu modal đang hiển thị và click không nằm trong modal hoặc icon
+            if (notiModal.classList.contains('show')) {
+                if (!notiModal.contains(e.target) && !bellIcon.contains(e.target)) {
+                    notiModal.classList.remove('show');
+                }
+            }
+        });
     }
 });

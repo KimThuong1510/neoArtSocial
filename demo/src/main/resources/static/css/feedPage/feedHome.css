@@ -93,12 +93,14 @@
 /* ===== NOTIFICATION MODAL ===== */
 .noti-modal {
     position: fixed;
-    top: 80px;
+    top: 160px;
     left: 80px;
     display: none;
     z-index: 999;
 }
-
+.noti-modal.show {
+    display: block;
+}
 .noti-box {
     width: 350px;
     background: #fff;

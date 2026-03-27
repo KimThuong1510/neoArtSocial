@@ -11,23 +11,7 @@
 
 <body>
 <div class="app-container">
-    <aside class="sidebar-left">
-        <a class="profile-top" th:href="@{/profile}">
-            <img id="avatarImg" th:src="${currentUser != null and currentUser.avatar != null ? currentUser.avatar : 'https://i.pravatar.cc/150?u=9'}">
-        </a>
-
-        <div class="nav-icons-group">
-            <i class="fa-solid fa-house active"></i>
-            <i class="fa-solid fa-comment"></i>
-            <i class="fa-solid fa-bell"></i>
-        </div>
-
-        <form th:action="@{/logout}" method="post" class="add-bottom" title="Đăng xuất">
-            <button type="submit" style="all: unset; cursor: pointer;">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i>
-            </button>
-        </form>
-    </aside>
+    <div th:replace="~{common/sidebar-left :: sidebar-left}"></div>
 
     <main class="main-content">
         <div class="search-bar-container">

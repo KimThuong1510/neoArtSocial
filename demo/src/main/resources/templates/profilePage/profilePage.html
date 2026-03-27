@@ -10,25 +10,7 @@
 </head>
 
 <body>
-<aside class="sidebar-left">
-    <div class="profile-top">
-        <a th:href="@{/profile}">
-            <img src="https://i.pravatar.cc/150?u=9" alt="User">
-        </a>
-    </div>
-    <div class="nav-icons-group">
-        <a th:href="@{/feed}">
-            <i class="fa-solid fa-house"></i>
-        </a>
-        <i class="fa-solid fa-comment"></i>
-    </div>
-    <form th:action="@{/logout}" method="post" class="add-bottom" title="Đăng xuất">
-        <button type="submit" style="all: unset; cursor: pointer;">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i>
-        </button>
-    </form>
-
-</aside>
+<div th:replace="~{common/sidebar-left :: sidebar-left}"></div>
 
 <!-- SIDEBAR -->
 <div class="sidebar">
