@@ -2,7 +2,7 @@
 
 body {
     font-family: 'Segoe UI', sans-serif;
-    background-color: #fce4ec;
+    background-color: #fdf5f3;
     height: 100vh;
 }
 
@@ -41,20 +41,28 @@ body {
     font-size: 40px;
     color: #e0e0e0;
     cursor: pointer;
+    transition: all 0.3s ease; /* Hiệu ứng mượt mà */
 }
 
-.nav-icons-group i.active { color: #ff4d6d; }
+.nav-icons-group i:hover {
+    color: #ff85a1; /* Màu hồng nhạt khi hover */
+    transform: scale(1.1); /* Phóng to nhẹ */
+}
+
+.nav-icons-group i.active { 
+    color: #e05538; /* Màu hồng đậm khi active */
+}
 
 .add-bottom i {
     font-size: 30px;
-    color: #ff85a1;
+    color: #e05538;
     cursor: pointer;
 }
 
 /* NỘI DUNG CHÍNH: DÀN RỘNG GRID */
 .main-content {
     flex: 1;
-    background-color: #fff0f3;
+    background-color: #fdf5f3;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
@@ -89,7 +97,7 @@ body {
 /* SIDEBAR PHẢI */
 .sidebar-right {
     width: 280px;
-    background-color: #ffebee;
+    background-color: #fde8e2;
     border: 2px solid #f8cdcd;
     padding: 30px 20px;
 }

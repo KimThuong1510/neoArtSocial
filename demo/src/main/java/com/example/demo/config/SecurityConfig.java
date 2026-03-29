@@ -1,5 +1,6 @@
 package com.example.demo.config;
 
+import com.example.demo.service.impl.CustomSuccessHandler;
 import com.example.demo.service.impl.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +20,9 @@ public class SecurityConfig {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
+    @Autowired
+    private CustomSuccessHandler customSuccessHandler;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -37,14 +41,20 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/auth", "/signup", "/css/**", "/js/**", "/images/**").permitAll()
+                    // USER
+                    .requestMatchers("/feed/**").hasRole("USER")
+
+                    // ADMIN
+                    .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
+
             .formLogin(form -> form
                 .loginPage("/auth")             
                 .loginProcessingUrl("/login")
                     .usernameParameter("username")
                     .passwordParameter("password")
-                .defaultSuccessUrl("/feed", true)
+                    .successHandler(customSuccessHandler)
                 .failureUrl("/auth?error")
                 .permitAll()
             )

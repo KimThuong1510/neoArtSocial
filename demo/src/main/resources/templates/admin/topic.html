@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:replace="~{admin/sidebar :: sidebar}"></div>
+<div class="main">
+
+  <div th:replace="~{admin/topbar :: topbar}"></div>
+
+  <!-- Content -->
+  <main class="content">
+
+    <div class="top-action-row">
+      <button class="btn-add">
+        Thêm chủ đề mới +
+      </button>
+    </div>
+
+    <!-- Bảng dữ liệu -->
+    <div class="table-card">
+      <div class="table-card-header">Danh sách chủ đề bài viết</div>
+
+      <table class="data-table">
+        <thead>
+        <tr>
+          <th>STT</th>
+          <th>Tên chủ đề</th>
+          <th>Ngày tạo</th>
+          <th>Trạng thái</th>
+          <th>Số lượng bài viết</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td><a href="#" class="user-link">an.nguyen</a></td>
+          <td>Nguyễn Văn An</td>
+          <td>01/03/2026</td>
+          <td><span class="status-pill status-active">ĐANG HOẠT ĐỘNG</span></td>
+          <td class="post-count">12</td>
+        </tr>
+        <tr>
+          <td><a href="#" class="user-link">an.nguyen</a></td>
+          <td>Nguyễn Văn An</td>
+          <td>01/03/2026</td>
+          <td><span class="status-pill status-inactive">ĐÃ VÔ HIỆU HÓA</span></td>
+          <td class="post-count">12</td>
+        </tr>
+        <tr>
+          <td><a href="#" class="user-link">an.nguyen</a></td>
+          <td>Nguyễn Văn An</td>
+          <td>01/03/2026</td>
+          <td><span class="status-pill status-active">ĐANG HOẠT ĐỘNG</span></td>
+          <td class="post-count">12</td>
+        </tr>
+        <tr>
+          <td><a href="#" class="user-link">an.nguyen</a></td>
+          <td>Nguyễn Văn An</td>
+          <td>01/03/2026</td>
+          <td><span class="status-pill status-active">ĐANG HOẠT ĐỘNG</span></td>
+          <td class="post-count">12</td>
+        </tr>
+        <tr>
+          <td><a href="#" class="user-link">an.nguyen</a></td>
+          <td>Nguyễn Văn An</td>
+          <td>01/03/2026</td>
+          <td><span class="status-pill status-active">ĐANG HOẠT ĐỘNG</span></td>
+          <td class="post-count">12</td>
+        </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div class="pagination">
+        <button class="page-btn active">1</button>
+        <button class="page-btn">2</button>
+        <button class="page-btn">3</button>
+        <button class="page-btn arrow"><i class="fa-solid fa-chevron-right"></i></button>
+      </div>
+    </div>
+
+  </main>
+</div>
+</body>
+</html>

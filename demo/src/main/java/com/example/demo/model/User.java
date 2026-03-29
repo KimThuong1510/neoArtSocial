@@ -66,4 +66,7 @@ public class User {
         if (username == null || password == null) return true;
         return !password.contains(username);
     }
+
+    @Column(nullable = false)
+    private String role;
 }

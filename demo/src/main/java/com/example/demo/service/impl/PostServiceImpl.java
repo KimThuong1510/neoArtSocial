@@ -3,6 +3,7 @@ package com.example.demo.service.impl;
 import com.example.demo.model.Post;
 import com.example.demo.model.PostImage;
 import com.example.demo.model.User;
+import com.example.demo.dto.PostAdminDTO;
 import com.example.demo.repository.PostImageRepository;
 import com.example.demo.repository.PostRepository;
 import com.example.demo.repository.SavedPostRepository;
@@ -156,5 +157,39 @@ public class PostServiceImpl implements PostService {
         jdbcTemplate.update("DELETE FROM comments WHERE post_id = ?", postId);
 
         postRepository.delete(post);
+    }
+
+    @Override
+    public List<PostAdminDTO> getAllPostsForAdmin() {
+        List<Post> posts = postRepository.findAll();
+        return posts.stream().map(post -> {
+            PostAdminDTO dto = new PostAdminDTO();
+            dto.setId(post.getId());
+            dto.setContent(post.getContent());
+            dto.setAuthorNickname(post.getUser() != null ? post.getUser().getNickname() : "Unknown");
+            dto.setTopicName(post.getTopic() != null ? post.getTopic().getName() : "Không chủ đề");
+            dto.setTopicCode(post.getTopic() != null ? post.getTopic().getCode() : "tag-default");
+            dto.setCreatedAt(post.getCreatedAt());
+            
+            // Get like and comment counts using jdbcTemplate
+            Long likeCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM post_likes WHERE post_id = ?", 
+                Long.class, post.getId());
+            Long commentCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM comments WHERE post_id = ?", 
+                Long.class, post.getId());
+            
+            dto.setLikeCount(likeCount);
+            dto.setCommentCount(commentCount);
+            
+            // Set first image URL if exists
+            if (post.getImages() != null && !post.getImages().isEmpty()) {
+                dto.setFirstImageUrl(post.getImages().get(0).getFilePath());
+            } else {
+                dto.setFirstImageUrl("https://via.placeholder.com/600x400?text=No+Image");
+            }
+            
+            return dto;
+        }).collect(java.util.stream.Collectors.toList());
     }
 }

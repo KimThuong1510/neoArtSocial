@@ -1,26 +1,41 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
   <meta charset="UTF-8">
   <title>Title</title>
 </head>
+
 <body>
-<aside th:fragment="sidebar-left" class="sidebar-left">
-  <a class="profile-top" th:href="@{/profile}">
-    <img id="avatarImg" th:src="${currentUser != null and currentUser.avatar != null ? currentUser.avatar : 'https://i.pravatar.cc/150?u=9'}" alt="">
-  </a>
+  <aside th:fragment="sidebar-left" class="sidebar-left">
+    <a class="profile-top" th:href="@{/profile}">
+      <img id="avatarImg"
+        th:src="${currentUser != null and currentUser.avatar != null ? currentUser.avatar : 'https://i.pravatar.cc/150?u=9'}"
+        alt="">
+    </a>
 
-  <div class="nav-icons-group">
-    <i class="fa-solid fa-house active"></i>
-    <i class="fa-solid fa-comment"></i>
-    <i class="fa-solid fa-bell"></i>
-  </div>
+    <div class="nav-icons-group">
+      <a th:href="@{/feed}" title="Trang chủ">
+        <i class="fa-solid fa-house active"></i>
+      </a>
+      <a th:href="@{/chat}" title="Trò chuyện">
+        <i class="fa-solid fa-comment"></i>
+      </a>
 
-  <form th:action="@{/logout}" method="post" class="add-bottom" title="Đăng xuất">
-    <button type="submit" style="all: unset; cursor: pointer;">
-      <i class="fa-solid fa-arrow-right-from-bracket"></i>
-    </button>
-  </form>
-</aside>
+      <!-- Link trang Admin - Chỉ hiện cho ADMIN -->
+      <a th:href="@{/admin}" sec:authorize="hasRole('ADMIN')" title="Quản trị">
+        <i class="fa-solid fa-user-shield"></i>
+      </a>
+
+      <i class="fa-solid fa-bell" title="Thông báo"></i>
+    </div>
+
+    <form th:action="@{/logout}" method="post" class="add-bottom" title="Đăng xuất">
+      <button type="submit" style="all: unset; cursor: pointer;">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+      </button>
+    </form>
+  </aside>
 </body>
+
 </html>

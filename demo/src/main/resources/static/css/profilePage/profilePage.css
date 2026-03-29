@@ -27,17 +27,15 @@ body{
 .sidebar{
     width:320px;
     position:fixed;
-    left:80px;
+    left: 95px;
+    top: 5%;
     padding:30px;
-
     display:flex;
     flex-direction:column;
     align-items:center;
-
     border-radius:10px;
     border:2px solid #f8cdcd;
-    background-color:#fff;
-
+    background-color: #fff;
     overflow-y:auto;
 }
 
@@ -167,7 +165,7 @@ button:hover{
     flex:1;
     margin-left:350px;
     overflow-y:auto;
-    background-color:#fce4ec;
+    background-color: #fdf5f3;
     position:relative;
 }
 

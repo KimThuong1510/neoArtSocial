@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<aside th:fragment="sidebar" class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">N</div>
+    <div class="logo-text">
+      <h2>NeoArt</h2>
+      <p>Admin Management</p>
+    </div>
+  </div>
+
+  <nav class="nav-menu">
+    <a class="nav-item active" href="#">
+      <i class="fa-regular fa-rectangle-list"></i> Quản lý bài viết
+    </a>
+    <a class="nav-item" href="#">
+      <i class="fa-regular fa-book-open"></i> Quản lý chủ đề
+    </a>
+    <a class="nav-item" href="#">
+      <i class="fa-regular fa-user"></i> Quản lý người dùng
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <form th:action="@{/logout}" method="post" title="Đăng xuất">
+      <button type="submit" style="all: unset; cursor: pointer;">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
+      </button>
+    </form>
+  </div>
+</aside>
+</body>
+</html>

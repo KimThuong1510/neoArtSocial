@@ -20,14 +20,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public void register(User user) {
 
-        if (userRepository.existsByUsername(user.getUsername())) {
-            throw new RuntimeException("Tên đăng nhập đã tồn tại!");
+        // Gán role mặc định nếu chưa có
+        if (user.getRole() == null || user.getRole().isEmpty()) {
+            user.setRole("USER");
         }
-
-        userRepository.save(user);
 
         // Mã hóa mật khẩu trước khi lưu
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        
         userRepository.save(user);
     }
 
