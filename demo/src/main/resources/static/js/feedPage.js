@@ -308,4 +308,30 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-});
+
+    // SEARCH FUNCTIONALITY
+    const searchInput = document.getElementById('searchInput');
+    const clearSearch = document.getElementById('clearSearch');
+
+    if (searchInput) {
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const keyword = searchInput.value.trim();
+                window.location.href = `/feed?keyword=${encodeURIComponent(keyword)}`;
+            }
+        });
+
+        searchInput.addEventListener('input', () => {
+            if (clearSearch) {
+                clearSearch.style.display = searchInput.value ? 'block' : 'none';
+            }
+        });
+    }
+
+    if (clearSearch) {
+        clearSearch.addEventListener('click', () => {
+            if (searchInput) searchInput.value = '';
+            window.location.href = '/feed';
+        });
+    }
+});

@@ -18,7 +18,8 @@
             <div class="search-header">
                 <div class="search-input-wrapper">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" placeholder="Bạn đang muốn tìm gì...">
+                    <input type="text" placeholder="Bạn đang muốn tìm gì..." th:value="${keyword}" id="searchInput">
+                    <i class="fa-solid fa-xmark clear-search" id="clearSearch" th:style="${keyword != null and keyword != '' ? 'display: block' : 'display: none'}"></i>
                 </div>
 
                 <div class="add-bottom" title="Tạo bài viết">
@@ -29,6 +30,15 @@
 
         <div class="photo-feed">
             <div class="photo-grid">
+                <!-- NO RESULTS -->
+                <div th:if="${#lists.isEmpty(posts)}" class="no-results-container">
+                    <div class="no-results-icon">
+                        <i class="fa-solid fa-cloud-moon-rain"></i>
+                    </div>
+                    <h2>Không tìm thấy kết quả tìm kiếm</h2>
+                    <p th:text="'Chúng tôi không tìm thấy kết quả nào cho: ' + ${keyword}">Không có gì ở đây cả.</p>
+                    <a th:href="@{/feed}" class="btn-back-home">Xem tất cả bài viết</a>
+                </div>
 
                 <a th:href="@{/feed/{id}(id=${post.id})}" class="card"
                    th:each="post : ${posts}"

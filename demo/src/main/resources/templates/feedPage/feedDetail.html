@@ -18,7 +18,8 @@
             <div class="search-header">
                 <div class="search-input-wrapper">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" placeholder="Bạn đang muốn tìm gì...">
+                    <input type="text" placeholder="Bạn đang muốn tìm gì..." th:value="${keyword}" id="searchInput">
+                    <i class="fa-solid fa-xmark clear-search" id="clearSearch" th:style="${keyword != null and keyword != '' ? 'display: block' : 'display: none'}"></i>
                 </div>
 
                 <div class="add-bottom" title="Đăng xuất">

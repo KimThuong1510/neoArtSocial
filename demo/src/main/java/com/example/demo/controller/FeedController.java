@@ -12,7 +12,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -31,8 +33,15 @@ public class FeedController {
     private UserRepository userRepository;
 
     @GetMapping("")
-    public String feed(Model model, Authentication authentication) {
-        model.addAttribute("posts", postRepository.findAll());
+    public String feed(@RequestParam(value = "keyword", required = false) String keyword, Model model, Authentication authentication) {
+        List<Post> posts;
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            posts = postRepository.searchPosts(keyword);
+            model.addAttribute("keyword", keyword);
+        } else {
+            posts = postRepository.findAll();
+        }
+        model.addAttribute("posts", posts);
         model.addAttribute("topics", topicRepository.findAll());
         if (authentication != null && authentication.isAuthenticated() && !authentication.getName().equals("anonymousUser")) {
             userRepository.findByUsername(authentication.getName())

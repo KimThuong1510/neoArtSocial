@@ -24,10 +24,10 @@ public class PostAdminDTO {
         for (int i = 0; i < images.size(); i++) {
             PostImageAdminDTO img = images.get(i);
             sb.append("{")
-              .append("\"url\":\"").append(img.getUrl()).append("\",")
-              .append("\"likes\":").append(img.getLikes()).append(",")
-              .append("\"comments\":").append(img.getComments())
-              .append("}");
+                    .append("\"url\":\"").append(img.getUrl()).append("\",")
+                    .append("\"likes\":").append(img.getLikes()).append(",")
+                    .append("\"comments\":").append(img.getComments())
+                    .append("}");
             if (i < images.size() - 1) sb.append(",");
         }
         sb.append("]");
