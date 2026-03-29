@@ -1,14 +1,10 @@
+let currentModalImages = [];
+  let currentModalIndex = 0;
 
   function openModal(card) {
     const d = card.dataset;
-
-    // Thumbnail
-    const thumbWrap = document.getElementById('modalThumbWrap');
-    if (d.img) {
-      thumbWrap.innerHTML = `<img class="modal-thumb" src="${d.img}" alt="${d.title}"/>`;
-    } else {
-      thumbWrap.innerHTML = `<div class="modal-thumb-placeholder"><i class="fa-regular fa-image"></i></div>`;
-    }
+    currentModalImages = JSON.parse(d.imagesJson || "[]");
+    currentModalIndex = 0;
 
     // Tag
     const tagEl = document.getElementById('modalTag');
@@ -18,13 +14,61 @@
     // Fields
     document.getElementById('modalAuthor').textContent   = d.author;
     document.getElementById('modalDate').textContent     = d.date;
-    document.getElementById('modalLikes').textContent    = Number(d.likes).toLocaleString('vi-VN');
-    document.getElementById('modalComments').textContent = Number(d.comments).toLocaleString('vi-VN');
     document.getElementById('modalContent').textContent  = d.content;
+
+    updateModalImage();
 
     // Open
     document.getElementById('modalOverlay').classList.add('open');
     document.body.style.overflow = 'hidden';
+  }
+
+  function updateModalImage() {
+    const thumbWrap = document.getElementById('modalThumbWrap');
+    const navCont = document.getElementById('modalNav');
+    
+    if (currentModalImages.length > 0) {
+      const img = currentModalImages[currentModalIndex];
+      thumbWrap.innerHTML = `<img class="modal-thumb" src="${img.url}" alt="Post Image"/>`;
+      
+      // Update stats based on current image
+      document.getElementById('modalLikes').textContent    = Number(img.likes).toLocaleString('vi-VN');
+      document.getElementById('modalComments').textContent = Number(img.comments).toLocaleString('vi-VN');
+      
+      // Navigation
+      if (currentModalImages.length > 1) {
+        navCont.style.display = 'flex';
+        document.getElementById('modalImageIndicator').textContent = `${currentModalIndex + 1} / ${currentModalImages.length}`;
+      } else {
+        navCont.style.display = 'none';
+      }
+    } else {
+      thumbWrap.innerHTML = `<div class="modal-thumb-placeholder"><i class="fa-regular fa-image"></i></div>`;
+      navCont.style.display = 'none';
+    }
+  }
+
+  function changeModalImage(dir) {
+    if (currentModalImages.length <= 1) return;
+    currentModalIndex = (currentModalIndex + dir + currentModalImages.length) % currentModalImages.length;
+    updateModalImage();
+  }
+
+  function changeCardImage(btn, dir) {
+    const card = btn.closest('.post-card');
+    const images = JSON.parse(card.dataset.imagesJson || "[]");
+    if (images.length <= 1) return;
+    
+    let currentIndex = parseInt(card.dataset.currentImageIndex || "0");
+    currentIndex = (currentIndex + dir + images.length) % images.length;
+    card.dataset.currentImageIndex = currentIndex;
+    
+    const imgData = images[currentIndex];
+    card.querySelector('.card-img-main').src = imgData.url;
+    
+    // Update labels
+    card.querySelector('.likes-count').textContent = imgData.likes;
+    card.querySelector('.comments-count').textContent = imgData.comments;
   }
 
   function closeModal() {

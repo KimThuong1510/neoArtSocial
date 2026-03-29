@@ -17,4 +17,10 @@ public class PostImage {
     @ManyToOne
     @JoinColumn(name="post_id", nullable = false)
     private Post post;
+
+    @Column(name = "likes_count")
+    private Long likesCount = 0L;
+
+    @Column(name = "comments_count")
+    private Long commentsCount = 0L;
 }

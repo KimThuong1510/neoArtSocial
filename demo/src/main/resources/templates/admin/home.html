@@ -33,18 +33,34 @@
                           data-topic=${post.topicName},
                           data-topic-class=${post.topicCode},
                           data-date=${#temporals.format(post.createdAt, 'dd/MM/yyyy')},
-                          data-likes=${post.likeCount},
-                          data-comments=${post.commentCount},
-                          data-views='0',
-                          data-img=${post.firstImageUrl},
+                          data-images-json=${post.imagesJson},
                           data-content=${post.content}">
+                
                 <div class="card-thumb">
-                    <img th:src="${post.firstImageUrl}" th:alt="${post.topicName}" loading="lazy"/>
+                    <img th:src="${!post.images.isEmpty() ? post.images[0].url : 'https://via.placeholder.com/600x400?text=No+Image'}" 
+                         th:alt="${post.topicName}" loading="lazy" class="card-img-main"/>
+                    
+                    <!-- Navigation arrows inside card thumb -->
+                    <div class="card-nav" th:if="${post.images.size() > 1}">
+                        <button class="nav-btn prev" onclick="event.stopPropagation(); changeCardImage(this, -1)">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <button class="nav-btn next" onclick="event.stopPropagation(); changeCardImage(this, 1)">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
                 </div>
+
                 <div class="card-body">
                     <span th:class="'card-tag ' + ${post.topicCode}" th:text="${post.topicName}">Chủ đề</span>
                     <p class="card-title" th:text="${#strings.abbreviate(post.content, 60)}">Tiêu đề bài viết</p>
                     <p class="card-date" th:text="${#temporals.format(post.createdAt, 'd/M/yyyy')}">Ngày đăng</p>
+                    
+                    <!-- Quick stats for current image -->
+                    <div class="card-quick-stats">
+                        <span><i class="fa-solid fa-heart"></i> <span class="likes-count" th:text="${!post.images.isEmpty() ? post.images[0].likes : 0}">0</span></span>
+                        <span><i class="fa-solid fa-comment"></i> <span class="comments-count" th:text="${!post.images.isEmpty() ? post.images[0].comments : 0}">0</span></span>
+                    </div>
                 </div>
                 <div class="card-footer">
                     <button class="btn-xem-them" onclick="openModal(this.closest('.post-card'))">
@@ -65,7 +81,20 @@
         </button>
 
         <!-- Thumbnail -->
-        <div id="modalThumbWrap"></div>
+        <div id="modalThumbWrap">
+            <!-- Will be populated by JS -->
+        </div>
+        
+        <!-- Modal Navigation -->
+        <div id="modalNav" class="modal-nav-container">
+            <button class="modal-nav-btn prev" onclick="changeModalImage(-1)">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <span id="modalImageIndicator">1 / 1</span>
+            <button class="modal-nav-btn next" onclick="changeModalImage(1)">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
 
         <!-- Body -->
         <div class="modal-body">
