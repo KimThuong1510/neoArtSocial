@@ -48,7 +48,9 @@ public class ProfileController {
     private SavedCollectionService savedCollectionService;
 
     @GetMapping("")
-    public String profilePage(Authentication authentication, Model model) {
+    public String profilePage(Authentication authentication,
+                               @RequestParam(value = "category", required = false) String category,
+                               Model model) {
         String username = authentication.getName();
         Optional<User> userOpt = userRepository.findByUsername(username);
 
@@ -59,7 +61,15 @@ public class ProfileController {
         if (user.getAvatar() != null && !avatarFileExists(user.getAvatar())) {
             user.setAvatar(null);
         }
-        List<Post> myPosts = postRepository.findByUser(user);
+
+        List<Post> myPosts;
+        if (category != null && !category.trim().isEmpty()) {
+            myPosts = postRepository.findByUserAndTopicCode(user, category);
+            model.addAttribute("selectedCategory", category);
+        } else {
+            myPosts = postRepository.findByUser(user);
+        }
+
         List<SavedCollection> collections = savedCollectionService.getUserCollections(username);
 
         List<Map<String, Object>> savedCollections = collections.stream().map(c -> {

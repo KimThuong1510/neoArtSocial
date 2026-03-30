@@ -477,19 +477,37 @@ tabs.forEach(tab => {
         tabs.forEach(t => t.classList.remove("active"))
         tab.classList.add("active")
         const type = tab.dataset.type
+        const filter = document.getElementById("categoryFilter")
         if (type === "my") {
             myPosts.style.display = "grid"
             topicGrid.style.display = "none"
             savedPosts.style.display = "none"
+            if (filter) filter.style.display = "block"
         }
         if (type === "liked") {
             myPosts.style.display = "none"
             topicGrid.style.display = "grid"
             savedPosts.style.display = "none"
+            if (filter) filter.style.display = "none"
         }
     })
 
 })
+
+// Xử lý filter chủ đề
+document.addEventListener('DOMContentLoaded', () => {
+    const categoryFilter = document.getElementById("categoryFilter");
+    if (categoryFilter) {
+        categoryFilter.addEventListener("change", () => {
+            const val = categoryFilter.value;
+            if (val) {
+                window.location.href = `/profile?category=${val}`;
+            } else {
+                window.location.href = `/profile`;
+            }
+        });
+    }
+});
 
 document.querySelectorAll(".topic-card").forEach(card => {
 

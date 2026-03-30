@@ -86,9 +86,12 @@
             <span class="active" data-type="my">Bài của tôi</span>
             <span data-type="liked">Bài đã lưu</span>
         </div>
-        <select name="category">
-            <option value="" disabled selected>Chọn chủ đề</option>
-            <option th:each="topic : ${topics}" th:value="${topic.code}" th:text="${topic.name}">
+        <select name="category" id="categoryFilter">
+            <option value="" th:selected="${selectedCategory == null}">Tất cả chủ đề</option>
+            <option th:each="topic : ${topics}" 
+                    th:value="${topic.code}" 
+                    th:text="${topic.name}"
+                    th:selected="${topic.code == selectedCategory}">
             </option>
         </select>
     </div>

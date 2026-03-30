@@ -16,4 +16,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
            "LOWER(p.topic.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(p.user.username) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Post> searchPosts(@Param("keyword") String keyword);
+
+    List<Post> findByUserAndTopicCode(User user, String topicCode);
 }
