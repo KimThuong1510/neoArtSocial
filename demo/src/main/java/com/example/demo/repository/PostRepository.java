@@ -18,4 +18,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> searchPosts(@Param("keyword") String keyword);
 
     List<Post> findByUserAndTopicCode(User user, String topicCode);
+    
+    long countByTopicId(Long topicId);
 }

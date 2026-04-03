@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/css/adminPage/user.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+<div th:replace="~{admin/sidebar :: sidebar}"></div>
+<div class="main">
+
+    <div th:replace="~{admin/topbar :: topbar}"></div>
+
+    <!-- Content -->
+    <main class="content">
+
+        <div class="table-card">
+            <div class="table-card-header">Danh sách tài khoản người dùng</div>
+
+            <table class="data-table">
+                <thead>
+                <tr>
+                    <th>Biệt danh</th>
+                    <th>Tên người dùng</th>
+                    <th>Ngày tạo</th>
+                    <th>Số lượng bài viết</th>
+                    <th>Thao tác</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td><a href="#" class="user-link">an.nguyen</a></td>
+                    <td>Nguyễn Văn An</td>
+                    <td>01/03/2026</td>
+                    <td class="post-count">12</td>
+                    <td><span class="status-pill status-active">Xóa</span></td>
+                </tr>
+
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <button class="page-btn arrow"><i class="fa-solid fa-chevron-left"></i></button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn arrow"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+</body>
+<script th:src="@{/js/admin/user.js}"></script>
+</html>

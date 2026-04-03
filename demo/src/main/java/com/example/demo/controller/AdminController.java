@@ -24,4 +24,9 @@ public class AdminController {
         model.addAttribute("totalPosts", posts.size());
         return "admin/home";
     }
+
+    @GetMapping("/topic")
+    public String topicPage() {
+        return "admin/topic";
+    }
 }

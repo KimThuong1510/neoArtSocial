@@ -3,6 +3,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <title>Title</title>
 </head>
 <body>
@@ -16,10 +17,10 @@
   </div>
 
   <nav class="nav-menu">
-    <a class="nav-item active" href="#">
+    <a class="nav-item active" th:href="@{/admin}">
       <i class="fa-regular fa-rectangle-list"></i> Quản lý bài viết
     </a>
-    <a class="nav-item" href="#">
+    <a class="nav-item" th:href="@{/admin/topic}">
       <i class="fa-regular fa-book-open"></i> Quản lý chủ đề
     </a>
     <a class="nav-item" href="#">

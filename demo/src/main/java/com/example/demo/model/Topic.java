@@ -22,4 +22,10 @@ public class Topic {
      */
     @Column(nullable = false)
     private String name;
+
+    /**
+     * Chỉ số màu (1-7) dùng cho frontend
+     */
+    @Column(nullable = false)
+    private Integer badge = 1;
 }
