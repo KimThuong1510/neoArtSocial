@@ -25,6 +25,16 @@ public class AdminController {
         return "admin/home";
     }
 
+    @Autowired
+    private com.example.demo.service.UserService userService;
+
+    @GetMapping("/user")
+    public String userPage(Model model) {
+        List<com.example.demo.dto.UserAdminDTO> users = userService.getAllUsersForAdmin();
+        model.addAttribute("users", users);
+        return "admin/user";
+    }
+
     @GetMapping("/topic")
     public String topicPage() {
         return "admin/topic";

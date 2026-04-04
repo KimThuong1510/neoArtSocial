@@ -9,7 +9,8 @@
 <header th:fragment="topbar" class="topbar">
   <div class="search-box">
     <i class="fa-solid fa-magnifying-glass"></i>
-    <input type="text" placeholder="Tìm kiếm bài viết" />
+    <input type="text" placeholder="Tìm kiếm ..." id="searchInput" />
+    <i class="fa-solid fa-xmark clear-search" id="clearSearch" style="display: none; cursor: pointer;"></i>
   </div>
   <div class="topbar-actions">
     <div class="admin-info">

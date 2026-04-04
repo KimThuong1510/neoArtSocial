@@ -212,6 +212,26 @@
       color: var(--text);
     }
 
+    .delete-btn {
+      background: none;
+      border: none;
+      color: #e05538;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 8px;
+      border-radius: 8px;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .delete-btn:hover {
+      background: #fde8e2;
+      transform: scale(1.1);
+    }
+
+    .delete-btn:active {
+      transform: scale(0.95);
+    }
+
     /* ── PAGINATION ── */
     .pagination {
       display: flex;

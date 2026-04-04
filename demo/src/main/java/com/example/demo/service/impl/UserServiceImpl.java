@@ -1,6 +1,7 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.dto.PasswordChangeRequest;
+import com.example.demo.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -9,25 +10,27 @@ import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.UserService;
 
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder; 
+    private PostRepository postRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public void register(User user) {
-
-        // Gán role mặc định nếu chưa có
         if (user.getRole() == null || user.getRole().isEmpty()) {
             user.setRole("USER");
         }
-
-        // Mã hóa mật khẩu trước khi lưu
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        
         userRepository.save(user);
     }
 
@@ -58,4 +61,28 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
     }
+
+    @Override
+    public List<com.example.demo.dto.UserAdminDTO> getAllUsersForAdmin() {
+        return userRepository.findAll().stream().map(user -> {
+            com.example.demo.dto.UserAdminDTO dto = new com.example.demo.dto.UserAdminDTO();
+            dto.setId(user.getId());
+            dto.setUsername(user.getUsername());
+            dto.setNickname(user.getNickname());
+            dto.setRole(user.getRole());
+
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    
+            dto.setBirthDate(
+                user.getBirthDate() != null
+                    ? user.getBirthDate().format(dateFormatter)
+                    : "N/A"
+            );
+
+
+            dto.setPostCount(postRepository.countByUser(user));
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
 }

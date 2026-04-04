@@ -84,10 +84,45 @@ let currentModalImages = [];
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
   // Search
-  document.querySelector('.search-box input').addEventListener('input', function() {
-    const q = this.value.toLowerCase();
-    document.querySelectorAll('.post-card').forEach(card => {
-      const title = card.querySelector('.card-title').textContent.toLowerCase();
-      card.style.display = title.includes(q) ? 'flex' : 'none';
+  const searchInput = document.getElementById('searchInput');
+  const clearSearch = document.getElementById('clearSearch');
+  const noResults = document.getElementById('noResults');
+  
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      const q = this.value.toLowerCase();
+      let hasVisible = false;
+      
+      if (q.length > 0 && clearSearch) {
+          clearSearch.style.display = 'block';
+      } else if (clearSearch) {
+          clearSearch.style.display = 'none';
+      }
+
+      document.querySelectorAll('.post-card').forEach(card => {
+        // Search by username or topic according to user requirement
+        const author = (card.dataset.author || '').toLowerCase();
+        const topic = (card.dataset.topic || '').toLowerCase();
+        
+        if (author.includes(q) || topic.includes(q)) {
+          card.style.display = 'flex';
+          hasVisible = true;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+      
+      if (noResults) {
+          noResults.style.display = (hasVisible || document.querySelectorAll('.post-card').length === 0) ? 'none' : 'block';
+      }
     });
-  });
+  }
+
+  if (clearSearch) {
+      clearSearch.addEventListener('click', function() {
+          if (searchInput) {
+              searchInput.value = '';
+              searchInput.dispatchEvent(new Event('input'));
+          }
+      });
+  }

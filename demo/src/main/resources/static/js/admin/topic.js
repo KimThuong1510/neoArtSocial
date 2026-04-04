@@ -51,15 +51,27 @@
   function renderRows(data) {
     const container = document.getElementById('rowsContainer');
     const empty = document.getElementById('emptyState');
+    const emptyTitle = document.getElementById('emptyStateTitle');
+    const emptyDesc = document.getElementById('emptyStateDesc');
+    const table = document.querySelector('.data-table');
     document.getElementById('countDisplay').textContent = data.length;
     renderRanking();
 
     if (data.length === 0) {
       container.innerHTML = '';
-      empty.style.display = 'flex';
+      empty.style.display = 'block';
+      if (document.getElementById('searchInput') && document.getElementById('searchInput').value) {
+          if (emptyTitle) emptyTitle.textContent = 'Không tìm thấy dữ liệu';
+          if (emptyDesc) emptyDesc.textContent = 'Không có kết quả nào khớp với tìm kiếm của bạn.';
+      } else {
+          if (emptyTitle) emptyTitle.textContent = 'Chưa có chủ đề nào';
+          if (emptyDesc) emptyDesc.textContent = 'Chưa có dữ liệu nào để hiển thị.';
+      }
+      if(table) table.style.display = 'none';
       return;
     }
     empty.style.display = 'none';
+    if(table) table.style.display = 'table';
 
     container.innerHTML = data.map((t, i) => `
       <div class="row-wrapper" data-id="${t.id}" id="row-${t.id}">
@@ -236,10 +248,25 @@
   }
 
   const searchInput = document.getElementById('searchInput');
+  const clearSearch = document.getElementById('clearSearch');
   if (searchInput) {
     searchInput.addEventListener('input', function () {
+      if (this.value.length > 0 && clearSearch) {
+          clearSearch.style.display = 'block';
+      } else if (clearSearch) {
+          clearSearch.style.display = 'none';
+      }
       renderRows(filterTopics(this.value));
     });
+  }
+
+  if (clearSearch) {
+      clearSearch.addEventListener('click', function() {
+          if (searchInput) {
+              searchInput.value = '';
+              searchInput.dispatchEvent(new Event('input'));
+          }
+      });
   }
 
   /* ── MODAL ── */

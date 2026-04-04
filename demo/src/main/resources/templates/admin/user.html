@@ -21,24 +21,35 @@
             <table class="data-table">
                 <thead>
                 <tr>
+                    <th>STT</th>
                     <th>Biệt danh</th>
                     <th>Tên người dùng</th>
-                    <th>Ngày tạo</th>
+                    <th>Vai trò</th>
+                    <th>Ngày sinh</th>
                     <th>Số lượng bài viết</th>
-                    <th>Thao tác</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td><a href="#" class="user-link">an.nguyen</a></td>
-                    <td>Nguyễn Văn An</td>
-                    <td>01/03/2026</td>
-                    <td class="post-count">12</td>
-                    <td><span class="status-pill status-active">Xóa</span></td>
+                <tr th:each="user : ${users}">
+                    <td th:text="${user.id}"></td>
+                    <td><a href="#" class="user-link" th:text="${user.username}"></a></td>
+                    <td th:text="${user.nickname}"></td>
+                    <td th:text="${user.role}"></td>
+                    <td th:text="${user.birthDate}"></td>
+    
+                    <td class="post-count" th:text="${user.postCount}"></td>
                 </tr>
-
                 </tbody>
             </table>
+
+            <!-- No Results -->
+            <div id="noResults" class="no-results-container" style="display: none; grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: #fff; border-radius: 20px; margin: 20px 0;">
+                <div class="no-results-icon" style="font-size: 64px; color: #ff85a1; margin-bottom: 20px;">
+                    <i class="fa-solid fa-cloud-moon-rain"></i>
+                </div>
+                <h2 style="color: #333; margin-bottom: 10px; font-size: 24px;">Không tìm thấy dữ liệu</h2>
+                <p style="color: #666; margin-bottom: 25px;">Không có kết quả nào khớp với tìm kiếm của bạn.</p>
+            </div>
 
             <!-- Pagination -->
             <div class="pagination">

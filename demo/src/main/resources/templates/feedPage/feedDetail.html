@@ -111,10 +111,9 @@
                     <div class="related-section">
                         <h4>Ảnh liên quan</h4>
                         <div class="related-grid">
-                            <img src="https://picsum.photos/300/200?random=11">
-                            <img src="https://picsum.photos/300/200?random=12">
-                            <img src="https://picsum.photos/300/200?random=13">
-                            <img src="https://picsum.photos/300/200?random=14">
+                            <a th:each="relatedPost : ${relatedPosts}" th:if="${relatedPost.images != null and #lists.size(relatedPost.images) > 0}" th:href="@{/feed/{id}(id=${relatedPost.id})}">
+                                <img th:src="@{${relatedPost.images[0].filePath}}" alt="">
+                            </a>
                         </div>
                     </div>
 

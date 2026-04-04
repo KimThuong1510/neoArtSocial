@@ -66,6 +66,13 @@ public class FeedController {
         model.addAttribute("post", post);
         model.addAttribute("isSavedByUser", isSavedByUser);
         model.addAttribute("topics", topicRepository.findAll());
+        
+        List<Post> relatedPosts = java.util.Collections.emptyList();
+        if (post.getTopic() != null) {
+            relatedPosts = postRepository.findByTopicIdAndIdNot(post.getTopic().getId(), post.getId());
+        }
+        model.addAttribute("relatedPosts", relatedPosts);
+        
         return "feedPage/feedDetail";
     }
 }

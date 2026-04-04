@@ -25,6 +25,15 @@
         <!-- Grid -->
         <div class="posts-grid" id="postsGrid">
 
+            <!-- No Results -->
+            <div id="noResults" class="no-results-container" style="display: none; grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: #fff; border-radius: 20px; border: 1px solid #f8bbd0; margin: 20px 0;">
+                <div class="no-results-icon" style="font-size: 64px; color: #ff85a1; margin-bottom: 20px;">
+                    <i class="fa-solid fa-cloud-moon-rain"></i>
+                </div>
+                <h2 style="color: #333; margin-bottom: 10px; font-size: 24px;">Không tìm thấy dữ liệu</h2>
+                <p style="color: #666; margin-bottom: 25px;">Không có kết quả nào khớp với tìm kiếm của bạn.</p>
+            </div>
+
             <!-- Card loop -->
             <div class="post-card" th:each="post : ${posts}"
                  th:attr="data-status='published',
