@@ -73,9 +73,9 @@
                     <!-- ACTION DƯỚI ẢNH -->
                     <div class="post-actions">
                         <div class="left">
-                            <i class="fa-regular fa-heart"></i>
+                            <i class="fa-regular fa-heart" id="likeBtn" style="cursor:pointer;"></i>
                             <span id="likeCount">0</span>
-                            <i class="fa-regular fa-comment"></i>
+                           <i class="fa-regular fa-comment" id="commentIcon" style="cursor:pointer;"></i>
                             <span id="commentCount">0</span>
                         </div>
                         <div class="right" style="display: flex; gap: 15px; align-items: center; justify-content: flex-end;">
@@ -86,8 +86,11 @@
                     <!-- COMMENT INPUT -->
                     <div class="post-comment">
                         <img th:src="${currentUser != null and currentUser.avatar != null ? currentUser.avatar : 'https://i.pravatar.cc/40'}">
-                        <input placeholder="Bạn sẽ nhận xét gì...">
-                        <i class="fa-regular fa-paper-plane"></i>
+                        <input id="commentInput" type="text" placeholder="Bạn sẽ nhận xét gì...">
+                        <i class="fa-regular fa-paper-plane" id="sendComment" style="cursor:pointer;"></i>
+                    </div>
+                    <div class="image-comment-preview" id="imageCommentPreview">
+                        <div class="comment-list" id="commentTree"></div>
                     </div>
                 </div>
                 <!-- BÊN PHẢI -->
@@ -101,11 +104,6 @@
                     </div>
                     <div>
                         <p th:text="${post.content}">Nội dung bài viết</p>
-                    </div>
-                    <!-- BÌNH LUẬN THEO ẢNH -->
-                    <div class="image-comment-preview">
-                        <h4>Bình luận cho ảnh này</h4>
-                        <p id="imageCommentText">Chưa có bình luận.</p>
                     </div>
                     <!-- ẢNH LIÊN QUAN -->
                     <div class="related-section">
@@ -247,7 +245,10 @@
 </div>
 
 </body>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script th:src="@{/js/feedPage.js}"></script>
+<script th:src="@{/js/feedDetailInteractions.js}"></script>
 <!-- Lưu danh sách đường dẫn ảnh vào biến JavaScript -->
 <script th:inline="javascript">
     /*<![CDATA[*/
@@ -257,39 +258,7 @@
     imagePaths.push(/*[[@{${img.filePath}}]]*/ '');
     /*[/]*/
 
-    // Tạo meta giả lập cho từng ảnh (like, comment, text)
-    // Ở đây dùng chỉ số ảnh để tạo số khác nhau cho giao diện.
-    var imageMeta = [];
-    /*[# th:each="img,iter : ${post.images}"]*/
-    imageMeta.push({
-        index: /*[[${iter.index}]]*/ 0,
-        likes: 130 + (/*[[${iter.index}]]*/ 0 * 7),
-        comments: 30 + (/*[[${iter.index}]]*/ 0 * 5),
-        commentText: /*[['Bình luận mẫu cho ảnh ' + ${iter.index + 1}]]*/ 'Bình luận mẫu cho ảnh 1'
-    });
-    /*[/]*/
-
     var currentImageIndex = 0;
-
-    function updateMetaForCurrentImage() {
-        if (!imageMeta || imageMeta.length === 0) return;
-        var meta = imageMeta[currentImageIndex] || imageMeta[0];
-
-        var likeEl = document.getElementById('likeCount');
-        if (likeEl && typeof meta.likes !== 'undefined') {
-            likeEl.textContent = meta.likes;
-        }
-
-        var commentEl = document.getElementById('commentCount');
-        if (commentEl && typeof meta.comments !== 'undefined') {
-            commentEl.textContent = meta.comments;
-        }
-
-        var commentTextEl = document.getElementById('imageCommentText');
-        if (commentTextEl && meta.commentText) {
-            commentTextEl.textContent = meta.commentText;
-        }
-    }
 
     // Chuyển ảnh trái/phải
     function changeImage(direction) {
@@ -329,8 +298,6 @@
         }
     });
 
-    // Khởi tạo meta cho ảnh đầu tiên khi load trang
-    updateMetaForCurrentImage();
     /*]]>*/
 </script>
 

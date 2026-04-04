@@ -74,33 +74,6 @@ if (imageInput && previewContainer) {
     });
 }
 
-// Modal like
-const likeModal = document.getElementById("likeModal");
-const closeLike = document.querySelector(".close-like");
-
-document.querySelectorAll(".fa-regular .fa-heart").forEach(btn => {
-
-    btn.addEventListener("click",(e)=>{
-
-        e.stopPropagation();
-
-        likeModal.style.display = "flex";
-
-    });
-
-});
-
-//closeLike.onclick = () =>{
-//    likeModal.style.display = "none";
-//}
-
-//nonelikeModal.addEventListener("click",(e)=>{
-//
-//    if(e.target === likeModal){
-//        likeModal.style.display="none";
-//    }
-//
-//});
 
 // --- Modal Save Collection ---
 const saveIcon = document.getElementById('saveIcon');
@@ -334,4 +307,20 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = '/feed';
         });
     }
-});
+});
+
+
+// Modal comment 
+    const commentIcon = document.getElementById('commentIcon');
+    const imageCommentPreview = document.getElementById('imageCommentPreview');
+
+    if (commentIcon && imageCommentPreview) {
+        commentIcon.addEventListener('click', () => {
+            const isVisible = imageCommentPreview.style.display !== 'none';
+            imageCommentPreview.style.display = isVisible ? 'none' : 'block';
+
+            // Đổi icon để phản ánh trạng thái
+            commentIcon.classList.toggle('fa-regular', isVisible);
+            commentIcon.classList.toggle('fa-solid', !isVisible);
+        });
+    }
