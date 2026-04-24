@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>NeoArt - Login & Signup</title>
+    <link rel="stylesheet" th:href="@{/css/loginPage.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+</head>
+
+<body>
+
+    <div class="auth-container" id="authContainer"
+        th:classappend="${#fields.hasErrors('user.*') or registrationError != null} ? 'signup-mode' : ''">
+
+        <div class="overlay-container">
+            <img src="https://i.pinimg.com/736x/8a/b4/bb/8ab4bbb87d78cdfe6fe97d7303aaba2b.jpg" alt="Art">
+        </div>
+
+        <div class="forms-wrapper">
+            <div th:if="${signupSuccess}" class="toast-success">
+                Đăng ký thành công !!
+            </div>
+            <div class="form-box login-box">
+                <div class="sidebar-brand">
+                    <div class="brand-icon">
+                        <img th:src="@{/assets/logo_art.png}" alt="Logo" class="logo-img">
+                    </div>
+                    <div class="brand-info">
+                        <span class="brand-name">NeoArt</span>
+                    </div>
+                </div>
+                <div class="tab-header">
+                    <span class="tab-item active">Đăng nhập</span>
+                    <span class="tab-item" onclick="toggleMode()">Đăng ký</span>
+                </div>
+
+
+                <p th:if="${errorMessage}" th:text="${errorMessage}"
+                    style="color: red; font-size: 12px; text-align: center; margin-bottom: 10px;"></p>
+                <p th:if="${logoutMessage}" th:text="${logoutMessage}"
+                    style="color: green; font-size: 12px; text-align: center; margin-bottom: 10px;"></p>
+
+                <form th:action="@{/login}" method="post">
+                    <div class="input-group">
+                        <label>Tên đăng nhập</label>
+                        <input type="text" name="username" required placeholder="Nhập username">
+                    </div>
+                    <div class="input-group">
+                        <label>Mật khẩu</label>
+                        <input type="password" name="password" required placeholder="Nhập mật khẩu">
+                    </div>
+                    <button type="submit" class="btn-submit">Đăng nhập</button>
+                </form>
+            </div>
+            <div class="form-box signup-box">
+                <div class="sidebar-brand" >
+                    <div class="brand-icon">
+                        <img th:src="@{/assets/logo_art.png}" alt="Logo" class="logo-img">
+                    </div>
+                    <div class="brand-info">
+                        <span class="brand-name">NeoArt</span>
+                    </div>
+                </div>
+                <div class="tab-header">
+                    <span class="tab-item" onclick="toggleMode()">Đăng nhập</span>
+                    <span class="tab-item active">Đăng ký</span>
+                </div>
+                <form th:action="@{/signup}" th:object="${user}" method="post">
+                    <div th:if="${#fields.hasGlobalErrors() or registrationError != null}">
+                        <p th:each="err : ${#fields.globalErrors()}" th:text="${err}"
+                            style="color: red; font-size: 12px; text-align: center;"></p>
+                        <p th:if="${registrationError != null}" th:text="${registrationError}"
+                            style="color: red; font-size: 12px; text-align: center;"></p>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Biệt danh</label>
+                        <input type="text" th:field="*{nickname}" required placeholder="Nhập biệt danh">
+                        <span th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}"
+                            style="color: red; font-size: 12px;"></span>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Tên đăng nhập</label>
+                        <input type="text" th:field="*{username}" required placeholder="Nhập tên đăng nhập">
+                        <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}"
+                            style="color: red; font-size: 12px;"></span>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Ngày sinh</label>
+                        <input type="date" th:field="*{birthDate}" required>
+                        <span th:if="${#fields.hasErrors('birthDate')}" th:errors="*{birthDate}"
+                            style="color: red; font-size: 12px;"></span>
+                    </div>
+                    <div class="input-group">
+                        <label>Mật khẩu</label>
+                        <input type="password" th:field="*{password}" required placeholder="Nhập it nhất 6 ký tự">
+                        <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}"
+                            style="color: red; font-size: 12px;"></span>
+                    </div>
+                    <button type="submit" class="btn-submit">Đăng ký</button>
+                </form>
+            </div>
+
+        </div>
+
+        <script>
+            function toggleMode() {
+                document.getElementById('authContainer').classList.toggle('signup-mode');
+            }
+
+        </script>
+    </div>
+</body>
+
+</html>

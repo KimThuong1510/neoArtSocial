@@ -1,0 +1,196 @@
+
+
+/* ================= POST CONTAINER ================= */
+.post-container {
+    background: #fff;
+    border-radius: 24px;
+    padding: 24px;
+
+    width: 100%;
+    max-width: 1100px;      /* CÙNG ĐỘ RỘNG SEARCH BAR */
+    margin: 20px auto 40px;
+
+    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+}
+
+/* ================= MAIN LAYOUT ================= */
+.post-detail-layout {
+    display: grid;
+    grid-template-columns: 2.3fr 1fr;
+    gap: 28px;
+}
+
+/* ================= LEFT SIDE ================= */
+.post-left {
+    display: flex;
+    flex-direction: column;
+}
+
+/* MAIN IMAGE */
+.post-main-image {
+    width: 100%;
+    max-height: 75vh;
+    object-fit: cover;
+    border-radius: 18px;
+}
+
+/* ACTION BAR */
+.post-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 14px 0;
+    font-size: 14px;
+}
+
+.post-actions .left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.post-actions i {
+    font-size: 20px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.post-actions i:hover {
+    color: #f06292;
+}
+
+/* COMMENT INPUT */
+.post-comment {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding-top: 12px;
+    border-top: 1px solid #eee;
+}
+
+.post-comment img {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+}
+
+.post-comment input {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    outline: none;
+    font-size: 14px;
+}
+
+.post-comment i {
+    font-size: 18px;
+    cursor: pointer;
+    color: #f06292;
+}
+
+/* ================= RIGHT SIDE ================= */
+.post-right {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+/* USER INFO */
+.post-user {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+}
+
+.post-user img.avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+}
+
+.post-user strong {
+    font-size: 16px;
+}
+
+.post-user p {
+    font-size: 14px;
+    color: #555;
+    margin-top: 4px;
+}
+
+/* ================= RELATED ================= */
+.related-section h4 {
+    font-size: 15px;
+    margin-bottom: 10px;
+}
+
+.related-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.related-grid img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.related-grid img:hover {
+    transform: scale(1.04);
+}
+
+/* ================= SCROLLBAR ================= */
+.post-container {
+    overflow-y: auto;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 992px) {
+    .post-detail-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .related-grid img {
+        height: 140px;
+    }
+}
+
+@media (max-width: 576px) {
+    .post-container {
+        padding: 16px;
+    }
+
+    .post-actions i {
+        font-size: 18px;
+    }
+}
+
+/* ================= BACK BUTTON ================= */
+.post-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    font-size: 14px;
+    font-weight: 500;
+    color: #555;
+
+    cursor: pointer;
+    margin-bottom: 16px;
+
+    transition: 0.2s;
+}
+
+.post-back i {
+    font-size: 16px;
+}
+
+.post-back:hover {
+    color: #f06292;
+}

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <title>NeoArt - Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/feedPage/feedHome.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body th:data-user-id="${currentUser != null ? currentUser.id : ''}">
+<div class="app-container">
+    <div th:replace="~{common/sidebar-left :: sidebar-left}"></div>
+
+    <main class="main-content">
+        <div class="search-bar-container">
+            <div class="search-header">
+                <div class="search-input-wrapper">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Bạn đang muốn tìm gì..."
+                           th:value="${keyword}" id="searchInput">
+                    <i class="fa-solid fa-xmark clear-search" id="clearSearch"
+                       th:style="${keyword != null and keyword != '' ?
+                          'display: block' : 'display: none'}"></i>
+                </div>
+
+                <div class="notification">
+                    <i class="fa-solid fa-bell" title="Thông báo"></i>
+                    <span class="noti-badge" id="notiUnreadBadge" style="display:none;"></span>
+                    <div id="notiToast" class="noti-toast-alert" role="status" aria-live="polite" hidden style="position: absolute; top: 100%; right: 0; z-index: 9999;"></div>
+
+                    <div class="noti-modal" id="notiModal">
+                        <div class="noti-box">
+                            <div class="noti-header">
+                                <span>Thông báo</span>
+                                <a href="#" id="markAllNotificationsRead">Đánh dấu tất cả đã đọc</a>
+                            </div>
+                            <div class="noti-tabs">
+                                <span class="tab active" data-type="all">Tất cả</span>
+                                <span class="tab" data-type="like">Thích</span>
+                                <span class="tab" data-type="comment">Bình luận</span>
+                            </div>
+                            <div class="noti-list" id="notiList">
+                                <p class="noti-empty" id="notiEmptyHint" style="padding:16px;color:#888;text-align:center;">Đang tải thông báo...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="user-profile">
+                    <img th:src="${currentUser != null and currentUser.avatar != null ? currentUser.avatar : 'https://i.pravatar.cc/100?u=9'}"
+                         alt="User Avatar"
+                         class="user-avatar">
+                    <span class="user-name" sec:authentication="name">username</span>
+                </div>
+            </div>
+        </div>
+        <div class="content-layout">
+            <div class="photo-feed">
+                <div class="photo-grid">
+                    <div th:if="${#lists.isEmpty(posts)}" class="no-results-container">
+                        <div class="no-results-icon">
+                            <i class="fa-solid fa-cloud-moon-rain"></i>
+                        </div>
+                        <h2>Không tìm thấy kết quả tìm kiếm
+                        </h2>
+                        <p th:text="'Chúng tôi không tìm thấy kết quả nào cho: ' + ${keyword}">Không có gì ở đây cả.</p>
+                        <a th:href="@{/feed}" class="btn-back-home">Xem tất cả bài viết</a>
+                    </div>
+
+                    <a th:href="@{/feed/{id}(id=${post.id})}" class="card"
+                       th:each="post : ${posts}"
+                       th:data-total="${#lists.size(post.images)}"
+                       style="text-decoration: none; display: block;">
+
+                        <img th:if="${post.images != null and #lists.size(post.images) > 0}"
+                             th:src="@{${post.images[0].filePath}}"
+                             alt="post image"/>
+
+                        <div class="overlay">
+
+                        <span class="username"
+                              th:text="${post.user.username}">
+                </span>
+
+                            <span class="more-count"
+                                  th:if="${#lists.size(post.images) > 1}"
+                                  th:text="'+' + (${#lists.size(post.images)} - 1)">
+                </span>
+
+                        </div>
+                    </a>
+
+                </div>
+                <div class="add-bottom" title="Tạo bài viết">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </div>
+            </div>
+            <aside class="sidebar-right">
+                <h3>Ảnh nổi bật</h3>
+                <div class="featured-grid">
+                    <div class="featured-item"><img src="https://picsum.photos/200/300?random=11"><span>❤️ 1.2k</span></div>
+                    <div class="featured-item"><img src="https://picsum.photos/200/300?random=12"><span>❤️ 1.1k</span></div>
+                    <div class="featured-item"><img src="https://picsum.photos/200/300?random=13"><span>❤️ 1.2k</span></div>
+                    <div class="featured-item"><img src="https://picsum.photos/200/300?random=14"><span>❤️ 1.1k</span></div>
+                </div>
+            </aside>
+        </div>
+
+    </main>
+
+</div>
+
+<div class="modal-overlay" id="createPostModal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="user-info">
+                <img th:src="${currentUser != null and currentUser.avatar != null ? currentUser.avatar : 'https://i.pravatar.cc/100?u=9'}" alt="User">
+                <span sec:authentication="name">username</span>
+            </div>
+            <i class="fa-solid fa-xmark close-modal"></i>
+        </div>
+
+        <form th:action="@{/posts/create}" method="post" enctype="multipart/form-data">
+
+            <div class="modal-body">
+                <div class="modal-row">
+                    <label>Chủ đề:</label>
+                    <select name="topic" required>
+                        <option value="" disabled selected>-- Chọn chủ đề --</option>
+                        <option th:each="topic : ${topics}"
+                                th:value="${topic.code}"
+                                th:text="${topic.name}">
+                        </option>
+                    </select>
+
+                    <label class="upload-btn">
+                        <i class="fa-regular fa-image"></i> Tải ảnh lên
+                        <input type="file"
+                               name="images"
+                               id="imageInput"
+                               accept="image/*"
+                               multiple hidden required>
+                    </label>
+                </div>
+
+                <textarea name="content"
+                          placeholder="Mô tả ảnh của bạn ..."></textarea>
+
+                <div class="image-preview photo-grid"
+                     id="imagePreview"></div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit" class="btn-post">Đăng</button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script th:src="@{/js/feedPage.js}"></script>
+<script th:src="@{/js/notificationsRealtime.js}"></script>
+</body>
+
+</html>

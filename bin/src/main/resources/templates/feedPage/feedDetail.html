@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <title>NeoArt - Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/feedPage/feedDetail.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+<div class="app-container">
+    <div th:replace="~{common/sidebar-left :: sidebar-left}"></div>
+
+    <main class="main-content">
+        <div class="search-bar-container">
+            <div class="search-header">
+                <div class="search-input-wrapper">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Bạn đang muốn tìm gì...">
+                </div>
+
+                <div class="add-bottom" title="Đăng xuất">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="post-container" th:data-post-id="${post.id}" id="mainPostContainer">
+            <div class="post-back" onclick="window.history.back()" style="cursor: pointer;">
+                <i class="fa-solid fa-arrow-left"></i>
+            </div>
+            <div class="post-detail-layout">
+                <!-- BÊN TRÁI -->
+                <div class="post-left">
+                    <!-- CONTAINER ẢNH VỚI NÚT ĐIỀU HƯỚNG -->
+                    <div class="image-container" style="position: relative;">
+                        <!-- ẢNH POST -->
+                        <img class="post-main-image"
+                             th:src="@{${post.images[0].filePath}}"
+                             id="currentImage"
+                             alt="post image"
+                             th:if="${post.images != null and #lists.size(post.images) > 0}">
+
+                        <!-- NÚT MŨI TÊN TRÁI (chỉ hiện khi có >= 2 ảnh) -->
+                        <button class="nav-arrow nav-arrow-left"
+                                id="prevBtn"
+                                th:if="${post.images != null and #lists.size(post.images) > 1}"
+                                onclick="changeImage(-1)"
+                                style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 18px; z-index: 10;">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+
+                        <!-- NÚT MŨI TÊN PHẢI (chỉ hiện khi có >= 2 ảnh) -->
+                        <button class="nav-arrow nav-arrow-right"
+                                id="nextBtn"
+                                th:if="${post.images != null and #lists.size(post.images) > 1}"
+                                onclick="changeImage(1)"
+                                style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 18px; z-index: 10;">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+
+                        <!-- SỐ THỨ TỰ ẢNH (ví dụ: 1/3) -->
+                        <div class="image-counter"
+                             th:if="${post.images != null and #lists.size(post.images) > 1}"
+                             style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); color: white; padding: 5px 15px; border-radius: 20px; font-size: 14px;">
+                            <span id="currentIndex">1</span> / <span th:text="${#lists.size(post.images)}"></span>
+                        </div>
+                    </div>
+
+                    <!-- ACTION DƯỚI ẢNH -->
+                    <div class="post-actions">
+                        <div class="left">
+                            <i class="fa-regular fa-heart"></i>
+                            <span id="likeCount">0</span>
+                            <i class="fa-regular fa-comment"></i>
+                            <span id="commentCount">0</span>
+                        </div>
+                        <div class="right" style="display: flex; gap: 15px; align-items: center; justify-content: flex-end;">
+                            <i id="downloadIcon" class="fa-solid fa-download" style="cursor: pointer;" title="Tải ảnh này về máy"></i>
+                            <i id="saveIcon" th:class="${isSavedByUser ? 'fa-solid fa-bookmark' : 'fa-regular fa-bookmark'}" style="cursor: pointer;" title="Lưu bài viết vào thư mục" th:if="${#authentication.name != post.user.username}"></i>
+                        </div>
+                    </div>
+                    <!-- COMMENT INPUT -->
+                    <div class="post-comment">
+                        <img th:src="${currentUser != null and currentUser.avatar != null ? currentUser.avatar : 'https://i.pravatar.cc/40'}">
+                        <input placeholder="Bạn sẽ nhận xét gì...">
+                        <i class="fa-regular fa-paper-plane"></i>
+                    </div>
+                </div>
+                <!-- BÊN PHẢI -->
+                <div class="post-right">
+                    <!-- USER + MÔ TẢ -->
+                    <div class="post-user">
+                        <img class="avatar" th:src="${currentUser != null and currentUser.avatar != null ? currentUser.avatar : 'https://i.pravatar.cc/100'}">
+                        <div>
+                            <strong th:text="${post.user.username}">Username</strong>
+                        </div>
+                    </div>
+                    <div>
+                        <p th:text="${post.content}">Nội dung bài viết</p>
+                    </div>
+                    <!-- BÌNH LUẬN THEO ẢNH -->
+                    <div class="image-comment-preview">
+                        <h4>Bình luận cho ảnh này</h4>
+                        <p id="imageCommentText">Chưa có bình luận.</p>
+                    </div>
+                    <!-- ẢNH LIÊN QUAN -->
+                    <div class="related-section">
+                        <h4>Ảnh liên quan</h4>
+                        <div class="related-grid">
+                            <img src="https://picsum.photos/300/200?random=11">
+                            <img src="https://picsum.photos/300/200?random=12">
+                            <img src="https://picsum.photos/300/200?random=13">
+                            <img src="https://picsum.photos/300/200?random=14">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <aside class="sidebar-right">
+        <h3>Ảnh nổi bật</h3>
+        <div class="featured-grid">
+            <div class="featured-item"><img src="https://picsum.photos/200/300?random=11"><span>❤️ 1.2k</span></div>
+            <div class="featured-item"><img src="https://picsum.photos/200/300?random=12"><span>❤️ 1.1k</span></div>
+            <div class="featured-item"><img src="https://picsum.photos/200/300?random=13"><span>❤️ 1.2k</span></div>
+            <div class="featured-item"><img src="https://picsum.photos/200/300?random=14"><span>❤️ 1.1k</span></div>
+        </div>
+    </aside>
+</div>
+
+<!--Modal like-->
+<div class="modal-overlay" id="likeModal">
+    <div class="like-modal">
+
+        <!-- HEADER -->
+        <div class="like-header">
+            <span>Người đã thích</span>
+            <i class="fa-solid fa-xmark close-like"></i>
+        </div>
+
+        <!-- LIST USER -->
+        <div class="like-list">
+
+            <div class="like-user">
+                <div class="avatar-small">
+                    <i class="fa fa-user"></i>
+                </div>
+
+                <div class="like-info">
+                    <b>Linh</b>
+                </div>
+            </div>
+
+            <div class="like-user">
+                <div class="avatar-small">
+                    <i class="fa fa-user"></i>
+                </div>
+
+                <div class="like-info">
+                    <b>Tuấn</b>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Save to Collection Modal -->
+<div class="modal-overlay" id="saveCollectionModal" style="display: none;">
+    <div class="modal" style="width: 350px; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+        <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #eee;">
+            <span style="font-weight: bold;">Lưu vào thư mục</span>
+            <i class="fa-solid fa-xmark" id="closeSaveModalBtn" style="cursor: pointer;"></i>
+        </div>
+        <div class="modal-body" style="padding: 15px; display: flex; flex-direction: column; gap: 10px; max-height: 300px; overflow-y: auto;">
+            <div id="collectionsList">
+                <p style="text-align: center; color: #888; font-size: 14px;">Đang tải thư mục...</p>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 10px 0;">
+
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <label style="font-size: 14px; font-weight: bold;">Tạo thư mục mới</label>
+                <div style="display: flex; gap: 5px;">
+                    <input type="text" id="newCollectionName" placeholder="Tên thư mục mới..." style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <button id="createCollectionBtn" style="padding: 8px 12px; border: none; background: #e60023; color: white; border-radius: 4px; cursor: pointer;">Tạo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal thêm bài viết -->
+<div class="modal-overlay" id="createPostModal" style="display: none;">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="user-info">
+                <img th:src="${currentUser != null and currentUser.avatar != null ? currentUser.avatar : 'https://i.pravatar.cc/100?u=9'}" alt="User">
+                <span sec:authentication="name">username</span>
+            </div>
+            <i class="fa-solid fa-xmark close-modal" style="cursor: pointer;"></i>
+        </div>
+
+        <form th:action="@{/posts/create}" method="post" enctype="multipart/form-data">
+            <div class="modal-body">
+                <div class="modal-row">
+                    <label>Chủ đề:</label>
+                    <select name="topic" required>
+                        <option value="" disabled selected>-- Chọn chủ đề --</option>
+                        <option th:each="topic : ${topics}"
+                                th:value="${topic.code}"
+                                th:text="${topic.name}">
+                        </option>
+                    </select>
+
+                    <label class="upload-btn" style="cursor: pointer;">
+                        <i class="fa-regular fa-image"></i> Tải ảnh lên
+                        <input type="file"
+                               name="images"
+                               id="imageInput"
+                               accept="image/*"
+                               multiple hidden required>
+                    </label>
+                </div>
+
+                <textarea name="content"
+                          placeholder="Mô tả ảnh của bạn ..." style="width: 100%; min-height: 100px; padding: 10px; border: 1px solid #ddd;"></textarea>
+
+                <div class="image-preview photo-grid" id="imagePreview" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px;"></div>
+            </div>
+
+            <div class="modal-footer" style="display: flex; justify-content: flex-end; padding-top: 15px; border-top: 1px solid #eee;">
+                <button type="submit" class="btn-post" style="padding: 10px 20px; background: #e60023; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Đăng</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+<script th:src="@{/js/feedPage.js}"></script>
+<!-- Lưu danh sách đường dẫn ảnh vào biến JavaScript -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    // Tạo mảng chứa đường dẫn ảnh
+    var imagePaths = [];
+    /*[# th:each="img : ${post.images}"]*/
+    imagePaths.push(/*[[@{${img.filePath}}]]*/ '');
+    /*[/]*/
+
+    // Tạo meta giả lập cho từng ảnh (like, comment, text)
+    // Ở đây dùng chỉ số ảnh để tạo số khác nhau cho giao diện.
+    var imageMeta = [];
+    /*[# th:each="img,iter : ${post.images}"]*/
+    imageMeta.push({
+        index: /*[[${iter.index}]]*/ 0,
+        likes: 130 + (/*[[${iter.index}]]*/ 0 * 7),
+        comments: 30 + (/*[[${iter.index}]]*/ 0 * 5),
+        commentText: /*[['Bình luận mẫu cho ảnh ' + ${iter.index + 1}]]*/ 'Bình luận mẫu cho ảnh 1'
+    });
+    /*[/]*/
+
+    var currentImageIndex = 0;
+
+    function updateMetaForCurrentImage() {
+        if (!imageMeta || imageMeta.length === 0) return;
+        var meta = imageMeta[currentImageIndex] || imageMeta[0];
+
+        var likeEl = document.getElementById('likeCount');
+        if (likeEl && typeof meta.likes !== 'undefined') {
+            likeEl.textContent = meta.likes;
+        }
+
+        var commentEl = document.getElementById('commentCount');
+        if (commentEl && typeof meta.comments !== 'undefined') {
+            commentEl.textContent = meta.comments;
+        }
+
+        var commentTextEl = document.getElementById('imageCommentText');
+        if (commentTextEl && meta.commentText) {
+            commentTextEl.textContent = meta.commentText;
+        }
+    }
+
+    // Chuyển ảnh trái/phải
+    function changeImage(direction) {
+        if (!imagePaths || imagePaths.length <= 1) return;
+
+        currentImageIndex += direction;
+
+        // Vòng lặp: nếu quá đầu thì về cuối, quá cuối thì về đầu
+        if (currentImageIndex < 0) {
+            currentImageIndex = imagePaths.length - 1;
+        } else if (currentImageIndex >= imagePaths.length) {
+            currentImageIndex = 0;
+        }
+
+        // Cập nhật src của ảnh
+        var currentImage = document.getElementById('currentImage');
+        if (currentImage && imagePaths[currentImageIndex]) {
+            currentImage.src = imagePaths[currentImageIndex];
+        }
+
+        // Cập nhật số thứ tự
+        var currentIndexSpan = document.getElementById('currentIndex');
+        if (currentIndexSpan) {
+            currentIndexSpan.textContent = currentImageIndex + 1;
+        }
+
+        // Cập nhật số like / comment / nội dung comment theo ảnh
+        updateMetaForCurrentImage();
+    }
+
+    // Hỗ trợ phím mũi tên để chuyển ảnh
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'ArrowLeft') {
+            changeImage(-1);
+        } else if (event.key === 'ArrowRight') {
+            changeImage(1);
+        }
+    });
+
+    // Khởi tạo meta cho ảnh đầu tiên khi load trang
+    updateMetaForCurrentImage();
+    /*]]>*/
+</script>
+
+</html>

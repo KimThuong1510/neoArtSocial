@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/css/profilePage/profilePage.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+<div th:replace="~{common/sidebar-left :: sidebar-left}"></div>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <div class="menu-btn">
+        <i class="fa-solid fa-ellipsis"></i>
+
+        <div class="menu-popup" id="menuPopup">
+            <div onclick="showEdit()">Chỉnh sửa thông tin</div>
+            <div onclick="showPassword()">Thay đổi mật khẩu</div>
+        </div>
+    </div>
+
+    <div class="avatar" id="avatarBox">
+        <img id="avatarImg" th:src="${user.avatar != null ? user.avatar : 'https://i.pravatar.cc/150?u=9'}">
+        <input type="file" id="avatarInput" accept="image/*" hidden>
+    </div>
+
+    <div class="nickname" th:text="${user.nickname}">Biệt danh</div>
+
+    <div class="stats">
+        <div>
+            <strong>100</strong><br>
+            <span>lượt thích</span>
+        </div>
+
+        <div>
+            <strong>50</strong><br>
+            <span>bình luận</span>
+        </div>
+    </div>
+    <hr>
+
+    <!-- FORM EDIT -->
+    <div id="editForm" class="form-area">
+        <div class="form-group">
+            <label>Tên người dùng</label>
+            <input id="editUsername" th:value="${user.username}" disabled
+                   style="background: #f0f0f0; cursor: not-allowed;">
+        </div>
+        <div class="form-group">
+            <label>Biệt danh</label>
+            <input id="editNickname" th:value="${user.nickname}" placeholder="Nhập biệt danh">
+        </div>
+        <div class="form-group">
+            <label>Ngày sinh</label>
+            <input id="editBirthDate" type="date" th:value="${user.birthDate}">
+        </div>
+        <button onclick="updateProfile()">Cập nhật</button>
+    </div>
+
+    <!-- FORM PASSWORD -->
+    <div id="passwordForm" class="form-area">
+        <div class="form-group">
+            <label>Mật khẩu cũ</label>
+            <input type="password" id="oldPassword">
+        </div>
+        <div class="form-group">
+            <label>Mật khẩu mới</label>
+            <input type="password" id="newPassword">
+        </div>
+        <div class="form-group">
+            <label>Xác nhận mật khẩu mới</label>
+            <input type="password" id="confirmPassword">
+        </div>
+        <button onclick="changePassword()">Đổi mật khẩu</button>
+    </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+    <div class="top-bar">
+        <div class="tabs">
+            <span class="active" data-type="my">Bài của tôi</span>
+            <span data-type="liked">Bài đã lưu</span>
+        </div>
+        <select name="category">
+            <option value="" disabled selected>Chọn chủ đề</option>
+            <option th:each="topic : ${topics}" th:value="${topic.code}" th:text="${topic.name}">
+            </option>
+        </select>
+    </div>
+    <div class="posts" id="myPosts">
+        <div class="card" th:each="post : ${myPosts}">
+
+            <div class="card-menu">
+                <i class="fa-solid fa-ellipsis"></i>
+
+                <div class="card-popup" th:data-post-id="${post.id}">
+                    <div class="edit-post" th:data-post-id="${post.id}"
+                         th:data-topic="${post.topic != null ? post.topic.code : ''}"
+                         th:data-content="${post.content}"
+                         th:data-image="${post.images != null and #lists.size(post.images) > 0 ? post.images[0].filePath : ''}">Chỉnh sửa bài viết</div>
+                    <div class="delete-post" th:data-post-id="${post.id}">Xóa bài viết</div>
+                </div>
+            </div>
+
+            <div th:if="${post.images != null and #lists.size(post.images) > 1}" class="card-image-container"
+                 style="position: relative;" data-current-index="0">
+                <img th:src="@{${post.images[0].filePath}}" alt="post image" class="img-main">
+                <button class="prev-btn"
+                        style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; z-index: 10;">&#10094;</button>
+                <button class="next-btn"
+                        style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; z-index: 10;">&#10095;</button>
+                <div class="img-counter"
+                     style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); color: white; padding: 3px 10px; border-radius: 15px; font-size: 12px;">
+                    1 / <span th:text="${#lists.size(post.images)}"></span></div>
+
+                <div class="image-data" style="display: none;">
+                    <span th:each="img : ${post.images}" th:data-url="@{${img.filePath}}"></span>
+                </div>
+            </div>
+
+            <img th:if="${post.images != null and #lists.size(post.images) == 1}"
+                 th:src="@{${post.images[0].filePath}}" alt="post image" class="img-main">
+
+            <div class="card-body">
+
+                <div class="card-title" th:text="${#strings.abbreviate(post.content, 40)}">
+                    Bức tranh rất đẹp
+                </div>
+                <div class="card-desc" th:text="${post.topic != null ? post.topic.name : ''}">
+                    Một cảnh quan tuyệt vời với những ngọn núi đỏ
+                </div>
+
+                <div class="author">
+                    <div class="author-info">
+                        <div class="author-avatar">
+                            <i class="fa fa-user"></i>
+                        </div>
+
+                        <div class="author-name" th:text="${post.user.username}">
+                            Mathor
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reaction">
+                    <i class="fa-regular fa-heart"></i>
+                    <span class="likeCount">0</span>
+                    <i class="fa-regular fa-comment comment-btn"></i>
+                    <span class="commentCount">0</span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD CHỦ ĐỀ (Saved Collections) -->
+    <div class="topic-grid" id="topicGrid">
+        <div class="topic-card" th:each="collection : ${savedCollections}" th:data-collection-id="${collection.id}">
+            <img th:src="@{${collection.coverImage}}" alt="Collection Cover">
+            <div class="topic-name" th:text="${collection.name}">Tên thư mục</div>
+        </div>
+
+        <!-- Empty state fallback if no collections exist -->
+        <div th:if="${#lists.isEmpty(savedCollections)}"
+             style="grid-column: 1 / -1; text-align: center; color: #888; padding: 20px;">
+            Bạn chưa có thư mục nào.
+        </div>
+    </div>
+
+    <!-- BÀI ĐÃ LƯU -->
+    <div class="posts" id="savedPosts">
+        <div class="card">
+
+            <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee">
+            <div class="card-body">
+                <div class="card-title">Bức tranh rất đẹp</div>
+                <div class="card-desc">Một cảnh quan tuyệt vời với những ngọn núi đỏ</div>
+                <div class="author" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div class="author-info">
+                        <div class="author-avatar">
+                            <i class="fa fa-user"></i>
+                        </div>
+                        <div class="author-name">
+                            Mathor
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-bookmark unsave-icon"
+                       style="cursor: pointer; color: #e60023; font-size: 1.2rem;" title="Xóa bài lưu"></i>
+                </div>
+                <div class="reaction">
+                    <span class="heart">❤ 1300</span>
+                    <span>💬 300</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal chỉnh sửa card -->
+<div class="modal-overlay" id="editPostModal">
+    <div class="modal">
+        <!-- HEADER -->
+        <div class="modal-header">
+            <div class="user-info">
+                <img src="https://i.pravatar.cc/100?u=9" alt="User">
+                <span sec:authentication="name">username</span>
+            </div>
+            <i class="fa-solid fa-xmark close-modal"></i>
+        </div>
+
+        <!-- BODY -->
+        <div class="modal-body">
+            <div class="modal-row">
+                <input type="hidden" id="editPostId">
+                <label>Chủ đề:</label>
+                <select name="category" id="editPostCategory">
+                    <option value="" disabled selected>Chọn chủ đề</option>
+                    <option th:each="topic : ${topics}" th:value="${topic.code}" th:text="${topic.name}">
+                    </option>
+                </select>
+                <label class="upload-btn">
+                    <i class="fa-regular fa-image"></i> Thay đổi ảnh
+                    <input type="file" id="editImageInput" accept="image/*" multiple hidden>
+                </label>
+
+            </div>
+
+            <textarea id="editPostContent" placeholder="Mô tả ảnh của bạn ..."></textarea>
+            <!-- PREVIEW IMAGE -->
+            <div class="image-preview" id="imagePreview"></div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="modal-footer">
+            <button class="btn-post">Chỉnh sửa</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal xóa card -->
+<div class="modal-overlay" id="deletePostModal">
+
+    <div class="modal">
+
+        <div class="modal-header">
+            <span>Xóa bài viết</span>
+            <i class="fa-solid fa-xmark close-delete"></i>
+        </div>
+
+        <div class="modal-body" style="text-align:center;padding:30px 10px;">
+            <p>Bạn có chắc muốn xóa bài viết này không?</p>
+        </div>
+
+        <div class="modal-footer" style="display:flex;gap:10px;justify-content:flex-end;">
+            <button class="btn-cancel">Hủy</button>
+            <button class="btn-delete">Xóa</button>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Modal hiển thị bình luận -->
+<div class="modal-overlay" id="commentModal">
+    <div class="comment-modal" style="width: 70%; max-width: 900px; height: 70vh;">
+
+        <!-- LEFT IMAGE -->
+        <div class="comment-image">
+            <img id="commentPostImage" src="">
+        </div>
+
+        <!-- RIGHT COMMENT -->
+        <div class="comment-content">
+
+            <!-- HEADER -->
+            <div class="comment-header">
+                <span>Bình luận</span>
+                <i class="fa-solid fa-xmark close-comment"></i>
+            </div>
+
+            <!-- COMMENT LIST -->
+            <div class="comment-list">
+
+                <div class="comment-item">
+                    <div class="avatar-small">
+                        <i class="fa fa-user"></i>
+                    </div>
+
+                    <div class="comment-text">
+                        <b>Linh</b>
+                        <p>Ảnh rất đẹp! Quá là một tác phẩm tuyệt vời.</p>
+
+                        <div class="comment-action">
+                            ❤ 45 <span>Phản hồi</span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- INPUT COMMENT -->
+            <div class="comment-input">
+
+                <div class="avatar-small">
+                    <i class="fa fa-user"></i>
+                </div>
+
+                <input type="text" placeholder="Thêm bình luận...">
+
+                <button>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- MODAL LIKE -->
+<div class="modal-overlay" id="likeModal">
+    <div class="like-modal">
+
+        <!-- HEADER -->
+        <div class="like-header">
+            <span>Người đã thích</span>
+            <i class="fa-solid fa-xmark close-like"></i>
+        </div>
+
+        <!-- LIST USER -->
+        <div class="like-list">
+
+            <div class="like-user">
+                <div class="avatar-small">
+                    <i class="fa fa-user"></i>
+                </div>
+
+                <div class="like-info">
+                    <b>Linh</b>
+                </div>
+            </div>
+
+            <div class="like-user">
+                <div class="avatar-small">
+                    <i class="fa fa-user"></i>
+                </div>
+
+                <div class="like-info">
+                    <b>Tuấn</b>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</div>
+</body>
+<script th:src="@{/js/profilePage.js}"></script>
+
+</html>

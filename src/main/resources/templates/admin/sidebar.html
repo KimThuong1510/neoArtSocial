@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>Title</title>
+</head>
+<body>
+<aside th:fragment="sidebar" class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">N</div>
+    <div class="logo-text">
+      <h2>NeoArt</h2>
+      <p>Admin Management</p>
+    </div>
+  </div>
+
+  <nav class="nav-menu">
+    <a class="nav-item" th:href="@{/admin}">
+      <i class="fa-regular fa-rectangle-list"></i> Quản lý bài viết
+    </a>
+    <a class="nav-item" th:href="@{/admin/topic}">
+      <i class="fa-regular fa-book-open"></i> Quản lý chủ đề
+    </a>
+    <a class="nav-item" th:href="@{/admin/user}">
+      <i class="fa-regular fa-user"></i> Quản lý người dùng
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <form th:action="@{/logout}" method="post" title="Đăng xuất">
+      <button type="submit" style="all: unset; cursor: pointer;">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
+      </button>
+    </form>
+  </div>
+</aside>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const currentPath = window.location.pathname;
+    const navItems = document.querySelectorAll('.nav-menu .nav-item');
+    
+    // Remove active from all
+    navItems.forEach(item => item.classList.remove('active'));
+    
+    // Add active to matching
+    navItems.forEach(item => {
+        const href = item.href;
+        if (href) {
+            const path = href.replace(window.location.origin, '');
+            if (path === '/admin' && currentPath === '/admin') {
+                item.classList.add('active');
+            } else if (path !== '/admin' && currentPath.startsWith(path)) {
+                item.classList.add('active');
+            }
+        }
+    });
+});
+</script>
+</body>
+</html>

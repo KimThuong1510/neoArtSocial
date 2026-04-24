@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+  <link rel="stylesheet" th:href="@{/css/adminPage/topic.css}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+<div th:replace="~{admin/sidebar :: sidebar}"></div>
+<div class="main">
+  <div th:replace="~{admin/topbar :: topbar}"></div>
+
+  <main class="content">
+    <div class="content-grid">
+      <div class="stats-col">
+        <div class="stats-label">Bài viết theo chủ đề</div>
+        <div class="stats-panel">
+          <div class="stats-panel-header">
+            <h3>Xếp hạng chủ đề</h3>
+            <span id="statsTopicCount">7 chủ đề</span>
+          </div>
+          <div class="ranking-list" id="rankingList"></div>
+          <div class="stats-panel-footer">
+            <span>Tổng bài viết</span>
+            <strong id="statsTotalPosts">0</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-col">
+        <div class="table-section-header">
+          <div class="section-title">
+            <h2>Danh sách chủ đề</h2>
+            <p>Kéo sang trái để xóa chủ đề</p>
+          </div>
+          <div class="header-right">
+            <button class="btn-add" id="openModalBtn">
+              <i class="fa-solid fa-plus"></i> Thêm chủ đề mới
+            </button>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <table class="data-table">
+            <thead>
+            <tr>
+              <th style="width:70px">STT</th>
+              <th style="width:200px">Mã chủ đề</th>
+              <th>Tên chủ đề</th>
+              <th style="width:100px;text-align:right">Thao tác</th>
+            </tr>
+            </thead>
+          </table>
+          <div id="rowsContainer"></div>
+          <div id="emptyState" class="no-results-container" style="display: none; grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: #fff; border-radius: 20px; margin: 20px 0;">
+              <div class="no-results-icon" style="font-size: 64px; color: #ff85a1; margin-bottom: 20px;">
+                  <i class="fa-solid fa-cloud-moon-rain"></i>
+              </div>
+              <h2 id="emptyStateTitle" style="color: #333; margin-bottom: 10px; font-size: 24px;">Chưa có chủ đề nào</h2>
+              <p id="emptyStateDesc" style="color: #666; margin-bottom: 25px;">Chưa có dữ liệu nào để hiển thị.</p>
+          </div>
+
+          <div class="pagination">
+            <div class="pagination-info">Hiển thị <strong id="countDisplay">7</strong> chủ đề</div>
+            <div class="page-btns">
+              <button class="page-btn arrow"><i class="fa-solid fa-chevron-left"></i></button>
+              <button class="page-btn active">1</button>
+              <button class="page-btn">2</button>
+              <button class="page-btn">3</button>
+              <button class="page-btn arrow"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-header-left">
+        <h3>Thêm chủ đề mới</h3>
+        <p>Điền thông tin để tạo chủ đề mới</p>
+      </div>
+      <button class="modal-close" id="closeModalBtn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Mã chủ đề</label>
+        <div class="form-input-icon-wrap">
+          <i class="fa-regular fa-hashtag input-icon"></i>
+          <input type="text" class="form-input" id="topicId" placeholder="Ví dụ: Technology, Fashion..." />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Tên chủ đề</label>
+        <div class="form-input-icon-wrap">
+          <i class="fa-regular fa-tag input-icon"></i>
+          <input type="text" class="form-input" id="topicName" placeholder="Ví dụ: Công nghệ, Thời trang..." />
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label>Màu nhãn</label>
+        <div class="color-options" id="colorOptions">
+          <div class="color-opt selected" data-idx="1" style="background:rgba(242,107,78,.25)"></div>
+          <div class="color-opt" data-idx="2" style="background:rgba(52,152,219,.25)"></div>
+          <div class="color-opt" data-idx="3" style="background:rgba(39,174,96,.25)"></div>
+          <div class="color-opt" data-idx="4" style="background:rgba(155,89,182,.25)"></div>
+          <div class="color-opt" data-idx="5" style="background:rgba(231,76,60,.25)"></div>
+          <div class="color-opt" data-idx="6" style="background:rgba(241,196,15,.25)"></div>
+          <div class="color-opt" data-idx="7" style="background:rgba(26,188,156,.25)"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" id="cancelBtn">Hủy</button>
+      <button class="btn-submit" id="submitBtn"><i class="fa-solid fa-plus" style="margin-right:8px"></i>Tạo chủ đề</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <i class="fa-solid fa-circle-check"></i>
+  <span id="toastMsg">Chủ đề đã được xóa</span>
+</div>
+</body>
+<script th:src="@{/js/admin/topic.js}"></script>
+</html>

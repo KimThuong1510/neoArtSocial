@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/css/adminPage/user.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+<div th:replace="~{admin/sidebar :: sidebar}"></div>
+<div class="main">
+
+    <div th:replace="~{admin/topbar :: topbar}"></div>
+
+    <main class="content">
+
+        <div class="table-card">
+            <div class="table-card-header">Danh sách tài khoản người dùng</div>
+            <table class="data-table">
+                <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Biệt danh</th>
+                    <th>Tên người dùng</th>
+                    <th>Vai trò</th>
+                    <th>Ngày sinh</th>
+                    <th>Số lượng bài viết</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="user : ${users}">
+                    <td th:text="${user.id}"></td>
+                    <td><a href="#" class="user-link" th:text="${user.username}"></a></td>
+                    <td th:text="${user.nickname}"></td>
+                    <td th:text="${user.role}"></td>
+                    <td th:text="${user.birthDate}"></td>
+    
+                    <td class="post-count" th:text="${user.postCount}"></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div id="noResults" class="no-results-container" style="display: none; grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: #fff; border-radius: 20px; margin: 20px 0;">
+                <div class="no-results-icon" style="font-size: 64px; color: #ff85a1; margin-bottom: 20px;">
+                    <i class="fa-solid fa-cloud-moon-rain"></i>
+                </div>
+                <h2 style="color: #333; margin-bottom: 10px; font-size: 24px;">Không tìm thấy dữ liệu</h2>
+                <p style="color: #666; margin-bottom: 25px;">Không có kết quả nào khớp với tìm kiếm của bạn.</p>
+            </div>
+
+            <div class="pagination">
+                <button class="page-btn arrow"><i class="fa-solid fa-chevron-left"></i></button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn arrow"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+</body>
+<script th:src="@{/js/admin/user.js}"></script>
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <title>NeoArt - Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/feedPage/feedHome.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+<div class="app-container">
+    <div th:replace="~{common/sidebar-left :: sidebar-left}"></div>
+
+    <main class="main-content">
+        <div class="search-bar-container">
+            <div class="search-header">
+                <div class="search-input-wrapper">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Bạn đang muốn tìm gì...">
+                </div>
+
+                <div class="add-bottom" title="Tạo bài viết">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="photo-feed">
+            <div class="photo-grid">
+
+                <a th:href="@{/feed/{id}(id=${post.id})}" class="card"
+                   th:each="post : ${posts}"
+                   th:data-total="${#lists.size(post.images)}"
+                   style="text-decoration: none; display: block;">
+
+                    <!-- ẢNH ĐẠI DIỆN -->
+                    <img th:if="${post.images != null and #lists.size(post.images) > 0}"
+                         th:src="@{${post.images[0].filePath}}"
+                         alt="post image"/>
+
+                    <!-- OVERLAY -->
+                    <div class="overlay">
+
+                        <!-- USERNAME -->
+                        <span class="username"
+                              th:text="${post.user.username}">
+                </span>
+
+                        <!-- +N ẢNH CÒN LẠI -->
+                        <span class="more-count"
+                              th:if="${#lists.size(post.images) > 1}"
+                              th:text="'+' + (${#lists.size(post.images)} - 1)">
+                </span>
+
+                    </div>
+                </a>
+
+            </div>
+        </div>
+
+    </main>
+
+    <aside class="sidebar-right">
+        <h3>Ảnh nổi bật</h3>
+        <div class="featured-grid">
+            <div class="featured-item"><img src="https://picsum.photos/200/300?random=11"><span>❤️ 1.2k</span></div>
+            <div class="featured-item"><img src="https://picsum.photos/200/300?random=12"><span>❤️ 1.1k</span></div>
+            <div class="featured-item"><img src="https://picsum.photos/200/300?random=13"><span>❤️ 1.2k</span></div>
+            <div class="featured-item"><img src="https://picsum.photos/200/300?random=14"><span>❤️ 1.1k</span></div>
+        </div>
+    </aside>
+</div>
+
+<div class="modal-overlay" id="createPostModal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="user-info">
+                <img th:src="${currentUser != null and currentUser.avatar != null ? currentUser.avatar : 'https://i.pravatar.cc/100?u=9'}" alt="User">
+                <span sec:authentication="name">username</span>
+            </div>
+            <i class="fa-solid fa-xmark close-modal"></i>
+        </div>
+
+        <form th:action="@{/posts/create}" method="post" enctype="multipart/form-data">
+
+            <div class="modal-body">
+                <div class="modal-row">
+                    <label>Chủ đề:</label>
+                    <select name="topic" required>
+                        <option value="" disabled selected>-- Chọn chủ đề --</option>
+                        <option th:each="topic : ${topics}"
+                                th:value="${topic.code}"
+                                th:text="${topic.name}">
+                        </option>
+                    </select>
+
+                    <label class="upload-btn">
+                        <i class="fa-regular fa-image"></i> Tải ảnh lên
+                        <input type="file"
+                               name="images"
+                               id="imageInput"
+                               accept="image/*"
+                               multiple hidden required>
+                    </label>
+                </div>
+
+                <textarea name="content"
+                          placeholder="Mô tả ảnh của bạn ..."></textarea>
+
+                <div class="image-preview photo-grid"
+                     id="imagePreview"></div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit" class="btn-post">Đăng</button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+<!-- NOTIFICATION MODAL -->
+<div class="noti-modal" id="notiModal">
+    <div class="noti-box">
+
+        <!-- HEADER -->
+        <div class="noti-header">
+            <span>Thông báo</span>
+            <a href="#">Đánh dấu tất cả đã đọc</a>
+        </div>
+
+        <!-- TABS -->
+        <div class="noti-tabs">
+            <span class="tab active" data-type="all">Tất cả</span>
+            <span class="tab" data-type="like">Thích</span>
+            <span class="tab" data-type="comment">Bình luận</span>
+        </div>
+
+        <!-- LIST -->
+        <div class="noti-list" id="notiList">
+            <!-- ITEM -->
+            <div class="noti-item" data-type="comment">
+                <img src="https://i.pravatar.cc/40?img=1">
+                <div class="content">
+                    <b>George Jose</b> đã bình luận vào bài viết của bạn
+                    <div class="time">2h trước</div>
+                </div>
+            </div>
+
+            <div class="noti-item" data-type="like">
+                <img src="https://i.pravatar.cc/40?img=2">
+                <div class="content">
+                    <b>Rose</b> và 10 người khác đã thích bài viết của bạn
+                    <div class="time">3h trước</div>
+                </div>
+            </div>
+
+            <div class="noti-item" data-type="message">
+                <img src="https://i.pravatar.cc/40?img=3">
+                <div class="content">
+                    <b>Phạm Tiến Dũng</b> đã gửi tin nhắn cho bạn
+                    <div class="time">4h trước</div>
+                </div>
+            </div>
+
+            <div class="noti-item" data-type="message">
+                <img src="https://i.pravatar.cc/40?img=4">
+                <div class="content">
+                    <b>Linda</b> đã gửi tin nhắn cho bạn
+                    <div class="time">6h trước</div>
+                </div>
+            </div>
+
+            <div class="noti-item" data-type="message">
+                <img src="https://i.pravatar.cc/40?img=5">
+                <div class="content">
+                    <b>Trọng Anh Ngược</b> muốn trò chuyện với bạn
+                    <div class="time">10h trước</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+<script th:src="@{/js/feedPage.js}"></script>
+
+</html>

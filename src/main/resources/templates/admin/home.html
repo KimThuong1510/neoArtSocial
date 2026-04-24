@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/css/adminPage/home.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+<div th:replace="~{admin/sidebar :: sidebar}"></div>
+
+<div class="main">
+    <div th:replace="~{admin/topbar :: topbar}"></div>
+    <main class="content">
+        <div class="content-header">
+            <div>
+                <h1>Quản lý bài viết</h1>
+                <p th:text="'Tổng cộng ' + ${totalPosts} + ' bài viết'">Tổng cộng 0 bài viết</p>
+            </div>
+        </div>
+
+        <div class="posts-grid" id="postsGrid">
+
+            <div id="noResults" class="no-results-container" style="display: none; grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: #fff; border-radius: 20px; border: 1px solid #f8bbd0; margin: 20px 0;">
+                <div class="no-results-icon" style="font-size: 64px; color: #ff85a1; margin-bottom: 20px;">
+                    <i class="fa-solid fa-cloud-moon-rain"></i>
+                </div>
+                <h2 style="color: #333; margin-bottom: 10px; font-size: 24px;">Không tìm thấy dữ liệu</h2>
+                <p style="color: #666; margin-bottom: 25px;">Không có kết quả nào khớp với tìm kiếm của bạn.</p>
+            </div>
+
+            <div class="post-card" th:each="post : ${posts}"
+                 th:attr="data-status='published',
+                          data-title=${#strings.abbreviate(post.content, 50)},
+                          data-author=${post.authorNickname},
+                          data-topic=${post.topicName},
+                          data-topic-class=${post.topicCode},
+                          data-date=${#temporals.format(post.createdAt, 'dd/MM/yyyy')},
+                          data-images-json=${post.imagesJson},
+                          data-content=${post.content}">
+                
+                <div class="card-thumb">
+                    <img th:src="${!post.images.isEmpty() ? post.images[0].url : 'https://via.placeholder.com/600x400?text=No+Image'}" 
+                         th:alt="${post.topicName}" loading="lazy" class="card-img-main"/>
+
+                    <div class="card-nav" th:if="${post.images.size() > 1}">
+                        <button class="nav-btn prev" onclick="event.stopPropagation(); changeCardImage(this, -1)">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <button class="nav-btn next" onclick="event.stopPropagation(); changeCardImage(this, 1)">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <span th:class="'card-tag ' + ${post.topicCode}" th:text="${post.topicName}">Chủ đề</span>
+                    <p class="card-title" th:text="${#strings.abbreviate(post.content, 60)}">Tiêu đề bài viết</p>
+                    <p class="card-date" th:text="${#temporals.format(post.createdAt, 'd/M/yyyy')}">Ngày đăng</p>
+
+                    <div class="card-quick-stats">
+                        <span><i class="fa-solid fa-heart"></i> <span class="likes-count" th:text="${!post.images.isEmpty() ? post.images[0].likes : 0}">0</span></span>
+                        <span><i class="fa-solid fa-comment"></i> <span class="comments-count" th:text="${!post.images.isEmpty() ? post.images[0].comments : 0}">0</span></span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button class="btn-xem-them" onclick="openModal(this.closest('.post-card'))">
+                        <i class="fa-regular fa-eye"></i> Xem thêm
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<!-- ══ MODAL ══ -->
+<div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+    <div class="modal" id="modalBox">
+        <button class="modal-close" onclick="closeModal()">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div id="modalThumbWrap">
+            <!-- Will be populated by JS -->
+        </div>
+
+        <div id="modalNav" class="modal-nav-container">
+            <button class="modal-nav-btn prev" onclick="changeModalImage(-1)">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <span id="modalImageIndicator">1 / 1</span>
+            <button class="modal-nav-btn next" onclick="changeModalImage(1)">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <div class="modal-body">
+            <div class="modal-tag-row">
+                <span class="card-tag" id="modalTag"></span>
+            </div>
+            <div class="modal-divider"></div>
+
+            <div class="modal-info-grid">
+                <div class="modal-info-item">
+                    <span class="info-label">Người đăng</span>
+                    <span class="info-value"><i class="fa-regular fa-circle-user"></i><span id="modalAuthor"></span></span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="info-label">Ngày đăng</span>
+                    <span class="info-value"><i class="fa-regular fa-calendar"></i><span id="modalDate"></span></span>
+                </div>
+            </div>
+
+            <div class="modal-stats">
+                <div class="stat-chip">
+                    <div class="stat-icon"><i class="fa-solid fa-heart"></i></div>
+                    <div>
+                        <div class="stat-label">Lượt thích</div>
+                        <div class="stat-num" id="modalLikes"></div>
+                    </div>
+                </div>
+                <div class="stat-chip">
+                    <div class="stat-icon"><i class="fa-solid fa-comment"></i></div>
+                    <div>
+                        <div class="stat-label">Bình luận</div>
+                        <div class="stat-num" id="modalComments"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-content-label">Nội dung bài viết</div>
+            <div class="modal-content-text" id="modalContent"></div>
+        </div>
+    </div>
+</div>
+
+</body>
+<script th:src="@{/js/admin/home.js}"></script>
+</html>

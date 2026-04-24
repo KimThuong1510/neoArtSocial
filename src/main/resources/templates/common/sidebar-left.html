@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+
+<body>
+<aside th:fragment="sidebar-left" class="sidebar-left">
+
+  <div class="sidebar-brand">
+    <div class="brand-icon">
+      <img th:src="@{/assets/logo_art.png}" alt="Logo" class="logo-img">
+    </div>
+    <div class="brand-info">
+      <span class="brand-name">NeoArt</span>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <span class ="menu-title">KHÁM PHÁ</span>
+    <a th:href="@{/feed}" class="nav-item" title="Trang chủ">
+      <i class="fa-solid fa-house"></i>
+      <span>Trang chủ</span>
+    </a>
+    <div class="divider"></div>
+    <span class ="menu-title">CÁ NHÂN</span>
+    <a th:href="@{/chat}" class="nav-item" title="Tin nhắn">
+      <i class="fa-solid fa-comment"></i>
+      <span class="nav-unread-dot" id="chatUnreadDot" style="display:none;"></span>
+      <span>Tin nhắn</span>
+    </a>
+    <a th:href="@{/profile}" class="nav-item" title="Cá nhân">
+      <i class="fa-solid fa-user"></i>
+      <span>Hồ sơ</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <button type="button" class="logout-item" id="openLogoutModal">
+      <i class="fa-solid fa-arrow-right-from-bracket"></i>
+      <span>Đăng xuất</span>
+    </button>
+  </div>
+
+  <div id="logoutModal" class="modal-overlay">
+    <div class="modal-content">
+      <h2>Đăng xuất</h2>
+      <p class="modal-title">Bạn có chắc chắn muốn đăng xuất ?</p>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" id="closeLogoutModal">Hủy</button>
+        <form th:action="@{/logout}" method="post" style="display: inline;">
+          <button type="submit" class="btn-logout">Đăng xuất</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const currentPath = window.location.pathname;
+        const navItems = document.querySelectorAll('.sidebar-nav .nav-item');
+
+        // Remove active from all
+        navItems.forEach(item => item.classList.remove('active'));
+
+        // Add active to matching
+        navItems.forEach(item => {
+            const href = item.href;
+            if (href) {
+                const path = href.replace(window.location.origin, '');
+                if (currentPath.startsWith(path)) {
+                    item.classList.add('active');
+                }
+            }
+        });
+    });
+
+    // logout modal - ĐÃ SỬA LỖI: thay "wdocument" thành "document"
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('logoutModal');
+
+        // Mẹo: Di chuyển modal ra trực tiếp thẻ body khi trang web load xong
+        // Việc này giúp modal thoát khỏi mọi giới hạn CSS của sidebar
+        if (modal) {
+            document.body.appendChild(modal);
+        }
+
+        const btnOpen = document.getElementById('openLogoutModal');
+        const btnClose = document.getElementById('closeLogoutModal');
+
+        if (btnOpen) {
+            btnOpen.onclick = function() {
+                modal.style.display = 'flex';
+            }
+        }
+
+        if (btnClose) {
+            btnClose.onclick = function() {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Đóng modal khi click ra ngoài
+        window.onclick = function(event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+    });
+  </script>
+</aside>
+
+
+</body>
+</html>

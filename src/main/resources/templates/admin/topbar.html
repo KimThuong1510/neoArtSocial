@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<header th:fragment="topbar" class="topbar">
+  <div class="search-box">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="text" placeholder="Tìm kiếm ..." id="searchInput" />
+    <i class="fa-solid fa-xmark clear-search" id="clearSearch" style="display: none; cursor: pointer;"></i>
+  </div>
+  <div class="topbar-actions">
+    <div class="admin-info">
+      <div class="avatar">A</div>
+      <span>Admin</span>
+    </div>
+  </div>
+</header>
+</body>
+</html>
