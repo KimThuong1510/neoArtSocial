@@ -20,4 +20,13 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     long countByTopicId(Long topicId);
     long countByUser(User user);
     List<Post> findByTopicIdAndIdNot(Long topicId, Long postId);
+
+    @Query("SELECT new com.example.demo.dto.FeaturedPostDto(p.id, MIN(i.filePath), COUNT(DISTINCT l.id)) " +
+           "FROM Post p " +
+           "LEFT JOIN p.images i " +
+           "LEFT JOIN PostLike l ON p.id = l.post.id " +
+           "GROUP BY p.id " +
+           "HAVING COUNT(i) > 0 " +
+           "ORDER BY COUNT(DISTINCT l.id) DESC, p.id DESC")
+    List<com.example.demo.dto.FeaturedPostDto> findTopFeaturedPosts(org.springframework.data.domain.Pageable pageable);
 }

@@ -85,10 +85,6 @@
         if (!commentTree) return;
         commentTree.innerHTML = "";
         seenCommentIds.clear();
-        if (!comments || comments.length === 0) {
-            commentTree.innerHTML = '<p style="text-align: center; color: #888; font-size: 14px; padding: 20px;">Chưa có bình luận nào. Hãy là người đầu tiên bình luận!</p>';
-            return;
-        }
         (comments || []).forEach((c) => {
             commentTree.appendChild(renderCommentNode(c, 0));
             collectIds(c);
@@ -285,8 +281,10 @@
                     row.className = "like-user";
                     const av = u.avatar || "https://i.pravatar.cc/32?u=" + encodeURIComponent(u.username);
                     row.innerHTML = `
-                        <div class="avatar-small"><img src="${escapeHtml(av)}" alt="" style="width:32px;height:32px;border-radius:50%;object-fit:cover;"></div>
-                        <div class="like-info"><b>${escapeHtml(u.nickname || u.username)}</b></div>
+                        <div class="avatar-small"><img src="${escapeHtml(av)}" alt="" style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
+                       <b>${escapeHtml(u.nickname || u.username)}</b>
+                        </div>
+
                     `;
                     listEl.appendChild(row);
                 });

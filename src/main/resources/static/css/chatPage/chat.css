@@ -231,8 +231,8 @@ body {
 }
 
 .create-group-icon-btn:hover {
-    background: #0056b3;
-    transform: scale(1.05);
+     background: #fa8985;
+     transform: scale(1.05);
 }
 
 .create-group-icon-btn:active {
@@ -1625,3 +1625,20 @@ body {
 .tab-content.active {
     animation: fadeIn 0.3s ease;
 }
+
+.message.system-message {
+    align-self: center;
+    max-width: 90%;
+    justify-content: center;
+    margin: 8px 0;
+}
+
+.system-message-content {
+    background: rgba(0, 0, 0, 0.05);
+    color: #e17272;
+    font-size: 15px;
+    padding: 6px 16px;
+    border-radius: 999px;
+    text-align: center;
+}
+

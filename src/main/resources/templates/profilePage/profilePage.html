@@ -18,7 +18,7 @@
     <div class="profile-card" id="profileCard">
 
         <div class="avatar" id="avatarBox">
-            <img id="avatarImg" th:src="${user.avatar != null ? user.avatar : 'https://i.pravatar.cc/150?u=9'}">
+            <img id="avatarImg" th:src="${user.avatar != null ? user.avatar : 'https://i.pravatar.cc/150?u=' + user.username}">
             <input type="file" id="avatarInput" accept="image/*" hidden>
         </div>
 
@@ -48,39 +48,51 @@
 
     <!-- ===== EDIT FORM (collapsible) ===== -->
     <div id="editForm" class="form-area">
-        <div class="form-row">
-            <div class="form-group">
-                <label>Tên người dùng</label>
-                <input id="editUsername" th:value="${user.username}" disabled
-                       style="background:#f0f0f0;cursor:not-allowed;">
+        <div class="form-area-header">
+            <i class="fa-solid fa-pen-to-square"></i>
+            <span>Chỉnh sửa thông tin</span>
+        </div>
+        <div class="form-area-body">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Tên người dùng</label>
+                    <input id="editUsername" th:value="${user.username}" disabled
+                           style="background:#f0f0f0;cursor:not-allowed;">
+                </div>
+                <div class="form-group">
+                    <label>Biệt danh</label>
+                    <input id="editNickname" th:value="${user.nickname}" placeholder="Nhập biệt danh">
+                </div>
+                <div class="form-group">
+                    <label>Ngày sinh</label>
+                    <input id="editBirthDate" type="date" th:value="${user.birthDate}">
+                </div>
+                <button onclick="updateProfile()">Cập nhật</button>
             </div>
-            <div class="form-group">
-                <label>Biệt danh</label>
-                <input id="editNickname" th:value="${user.nickname}" placeholder="Nhập biệt danh">
-            </div>
-            <div class="form-group">
-                <label>Ngày sinh</label>
-                <input id="editBirthDate" type="date" th:value="${user.birthDate}">
-            </div>
-            <button onclick="updateProfile()">Cập nhật</button>
         </div>
     </div>
 
     <div id="passwordForm" class="form-area">
-        <div class="form-row">
-            <div class="form-group">
-                <label>Mật khẩu cũ</label>
-                <input type="password" id="oldPassword">
+        <div class="form-area-header">
+            <i class="fa-solid fa-lock"></i>
+            <span>Thay đổi mật khẩu</span>
+        </div>
+        <div class="form-area-body">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Mật khẩu cũ</label>
+                    <input type="password" id="oldPassword">
+                </div>
+                <div class="form-group">
+                    <label>Mật khẩu mới</label>
+                    <input type="password" id="newPassword">
+                </div>
+                <div class="form-group">
+                    <label>Xác nhận mật khẩu mới</label>
+                    <input type="password" id="confirmPassword">
+                </div>
+                <button onclick="changePassword()">Đổi mật khẩu</button>
             </div>
-            <div class="form-group">
-                <label>Mật khẩu mới</label>
-                <input type="password" id="newPassword">
-            </div>
-            <div class="form-group">
-                <label>Xác nhận mật khẩu mới</label>
-                <input type="password" id="confirmPassword">
-            </div>
-            <button onclick="changePassword()">Đổi mật khẩu</button>
         </div>
     </div>
 
@@ -142,7 +154,7 @@
                 <div class="card-desc" th:text="${post.topic != null ? post.topic.name : ''}">Chủ đề</div>
                 <div class="author">
                     <div class="author-info">
-                        <div class="author-avatar"><i class="fa fa-user"></i></div>
+                        <img th:src="${post.user.avatar != null ? post.user.avatar : 'https://i.pravatar.cc/100?u=' + post.user.username}" alt="Avatar" class="author-avatar" style="width:30px;height:30px;border-radius:50%;object-fit:cover;margin-right:8px;">
                         <div class="author-name" th:text="${post.user.username}">Mathor</div>
                     </div>
                 </div>
@@ -179,7 +191,7 @@
                 <div class="card-desc">Một cảnh quan tuyệt vời với những ngọn núi đỏ</div>
                 <div class="author" style="display:flex;justify-content:space-between;align-items:center;">
                     <div class="author-info">
-                        <div class="author-avatar"><i class="fa fa-user"></i></div>
+                        <img src="https://i.pravatar.cc/100?u=mathor" alt="Avatar" class="author-avatar" style="width:30px;height:30px;border-radius:50%;object-fit:cover;margin-right:8px;">
                         <div class="author-name">Mathor</div>
                     </div>
                     <i class="fa-solid fa-bookmark unsave-icon"
@@ -200,7 +212,7 @@
     <div class="modal">
         <div class="modal-header">
             <div class="user-info">
-                <img src="https://i.pravatar.cc/100?u=9" alt="User">
+                <img th:src="${user.avatar != null ? user.avatar : 'https://i.pravatar.cc/100?u=' + user.username}" alt="User">
                 <span sec:authentication="name">username</span>
             </div>
             <i class="fa-solid fa-xmark close-modal"></i>

@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Post;
+import com.example.demo.model.PostImage;
+import com.example.demo.repository.PostImageRepository;
 import com.example.demo.repository.PostRepository;
 import com.example.demo.repository.SavedPostRepository;
 import com.example.demo.repository.TopicRepository;
@@ -32,6 +34,9 @@ public class FeedController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PostImageRepository postImageRepository;
+
     @GetMapping("")
     public String feed(@RequestParam(value = "keyword", required = false) String keyword, Model model, Authentication authentication) {
         List<Post> posts;
@@ -47,6 +52,8 @@ public class FeedController {
             userRepository.findByUsername(authentication.getName())
                     .ifPresent(currentUser -> model.addAttribute("currentUser", currentUser));
         }
+        List<com.example.demo.dto.FeaturedPostDto> featuredImages = postRepository.findTopFeaturedPosts(org.springframework.data.domain.PageRequest.of(0, 3));
+        model.addAttribute("featuredImages", featuredImages);
         return "feedPage/feedHome";
     }
 
@@ -72,6 +79,9 @@ public class FeedController {
             relatedPosts = postRepository.findByTopicIdAndIdNot(post.getTopic().getId(), post.getId());
         }
         model.addAttribute("relatedPosts", relatedPosts);
+
+        List<com.example.demo.dto.FeaturedPostDto> featuredImages = postRepository.findTopFeaturedPosts(org.springframework.data.domain.PageRequest.of(0, 3));
+        model.addAttribute("featuredImages", featuredImages);
         
         return "feedPage/feedDetail";
     }

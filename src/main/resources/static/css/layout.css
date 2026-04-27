@@ -253,18 +253,16 @@ body {
 .add-bottom {
     position: fixed;
     bottom: 30px;
-    /* ðŸ‘‡ cÄƒn theo layout cá»§a báº¡n */
     right: 350px;
-    /* = width sidebar-right + gap */
-    width: 55px;
-    height: 55px;
+    width: 65px;
+    height: 65px;
     border-radius: 50%;
     background: #ff4d6d;
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    font-size: 35px;
     cursor: pointer;
     box-shadow: 0 6px 20px rgba(255, 77, 109, 0.4);
     z-index: 999;
@@ -318,6 +316,9 @@ body {
     padding: 2px 8px;
     border-radius: 10px;
     white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 /* SEARCH HEADER */
@@ -364,7 +365,7 @@ body {
 
 /* ===== MODAL BOX ===== */
 .modal {
-    width: 520px;
+    width: 600px;
     background: #fff;
     border-radius: 14px;
     padding: 20px;

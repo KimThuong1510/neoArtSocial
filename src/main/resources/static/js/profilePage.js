@@ -528,16 +528,6 @@ document.querySelectorAll(".topic-card").forEach(card => {
                 // Clear loading state
                 savedPosts.innerHTML = '';
 
-                // Keep the "Quay lại" (Back) button and the posts
-                const backBtn = document.createElement('div');
-                backBtn.style.cssText = "grid-column: 1 / -1; cursor: pointer; color: #e60023; font-weight: bold; margin-bottom: 20px;";
-                backBtn.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Quay lại thư mục';
-                backBtn.onclick = () => {
-                    savedPosts.style.display = "none";
-                    topicGrid.style.display = "grid";
-                };
-                savedPosts.appendChild(backBtn);
-
                 if (posts.length === 0) {
                     const emptyState = document.createElement('div');
                     emptyState.style.cssText = "grid-column: 1 / -1; text-align: center; color: #888; padding: 20px;";
@@ -571,7 +561,7 @@ document.querySelectorAll(".topic-card").forEach(card => {
                             <div class="card-desc"></div>
                             <div class="author" style="display: flex; justify-content: space-between; align-items: center;">
                                 <div class="author-info">
-                                    <div class="author-avatar"><img src="${post.author.avatar}" style="width:100%; height:100%; border-radius:50%;" /></div>
+                                    <div class="author-avatar"><img src="${post.author.avatar || 'https://i.pravatar.cc/100?u=' + encodeURIComponent(post.author.username)}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;" /></div>
                                     <div class="author-name">${post.author.username}</div>
                                 </div>
                                 <i class="fa-solid fa-bookmark unsave-icon" style="cursor: pointer; color: #e60023; font-size: 1.2rem;" data-post-id="${post.id}" data-collection-id="${collectionId}" title="Xóa bài lưu"></i>

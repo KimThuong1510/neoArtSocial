@@ -100,7 +100,7 @@
                         </div>
 
                         <div class="post-comment">
-                            <img th:src="${currentUser != null and currentUser.avatar != null ? currentUser.avatar : 'https://i.pravatar.cc/40'}">
+                            <img th:src="${currentUser != null and currentUser.avatar != null ? currentUser.avatar : 'https://i.pravatar.cc/40?u=' + (currentUser != null ? currentUser.username : 'default')}">
                             <input id="commentInput" type="text" placeholder="Bạn sẽ nhận xét gì...">
                             <i class="fa-regular fa-paper-plane" id="sendComment" style="cursor:pointer;"></i>
                         </div>
@@ -111,7 +111,7 @@
 
                     <div class="post-right">
                         <div class="post-user">
-                            <img class="avatar" th:src="${currentUser != null and currentUser.avatar != null ? currentUser.avatar : 'https://i.pravatar.cc/100'}">
+                            <img class="avatar" th:src="${post.user.avatar != null ? post.user.avatar : 'https://i.pravatar.cc/100?u=' + post.user.username}">
                             <div>
                                 <strong th:text="${post.user.username}">Username</strong>
                             </div>
@@ -120,7 +120,7 @@
                             <p th:text="${post.content}">Nội dung bài viết</p>
                         </div>
                         <div class="related-section">
-                            <h4>Ảnh liên quan</h4>
+                            <h4>Bài viết liên quan</h4>
                             <div class="related-grid" th:if="${relatedPosts != null and not #lists.isEmpty(relatedPosts)}">
                                 <a th:each="relatedPost : ${relatedPosts}" th:if="${relatedPost.images != null and #lists.size(relatedPost.images) > 0}" th:href="@{/feed/{id}(id=${relatedPost.id})}">
                                     <img th:src="@{${relatedPost.images[0].filePath}}" alt="">
@@ -135,12 +135,21 @@
                 </div>
             </div>
             <aside class="sidebar-right">
-                <h3>Ảnh nổi bật</h3>
-                <div class="featured-grid">
-                    <div class="featured-item"><img src="https://picsum.photos/200/300?random=11"><span>❤️ 1.2k</span></div>
-                    <div class="featured-item"><img src="https://picsum.photos/200/300?random=12"><span>❤️ 1.1k</span></div>
-                    <div class="featured-item"><img src="https://picsum.photos/200/300?random=13"><span>❤️ 1.2k</span></div>
-                    <div class="featured-item"><img src="https://picsum.photos/200/300?random=14"><span>❤️ 1.1k</span></div>
+                <h3>Bài viết nổi bật</h3>
+                <div class="featured-grid" th:if="${featuredImages != null and not #lists.isEmpty(featuredImages)}">
+                    <a class="featured-item"
+                       th:each="item : ${featuredImages}"
+                       th:href="@{/feed/{id}(id=${item.postId})}">
+                        <img th:src="@{${item.filePath}}" alt="featured image">
+                        <span>
+                            <i class="fa-solid fa-heart" style="color: #ff4d6d;"></i> <span th:text="${item.likesCount != null ? item.likesCount : 0}" style="position: static; transform: none; background: transparent; padding: 0;">0</span>
+                        </span>
+                    </a>
+                </div>
+                <div class="featured-grid" th:if="${featuredImages == null or #lists.isEmpty(featuredImages)}">
+                    <div class="featured-item" style="grid-column: 1 / -1; text-align: center;">
+                        <span>Chưa có bài nổi bật</span>
+                    </div>
                 </div>
             </aside>
         </div>
@@ -157,28 +166,8 @@
         </div>
 
         <div class="like-list">
-
             <div class="like-user">
-                <div class="avatar-small">
-                    <i class="fa fa-user"></i>
-                </div>
-
-                <div class="like-info">
-                    <b>Linh</b>
-                </div>
             </div>
-
-            <div class="like-user">
-                <div class="avatar-small">
-                    <i class="fa fa-user"></i>
-                </div>
-
-                <div class="like-info">
-                    <b>Tuấn</b>
-
-                </div>
-
-
             </div>
 
         </div>
@@ -192,7 +181,7 @@
     <div class="modal">
         <div class="modal-header">
             <div class="user-info">
-                <img th:src="${currentUser != null and currentUser.avatar != null ? currentUser.avatar : 'https://i.pravatar.cc/100?u=9'}" alt="User">
+                <img th:src="${currentUser != null and currentUser.avatar != null ? currentUser.avatar : 'https://i.pravatar.cc/100?u=' + (currentUser != null ? currentUser.username : 'default')}" alt="User">
                 <span sec:authentication="name">username</span>
             </div>
             <i class="fa-solid fa-xmark close-modal" style="cursor: pointer;"></i>

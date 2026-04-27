@@ -49,7 +49,7 @@
                 </div>
 
                 <div class="user-profile">
-                    <img th:src="${currentUser != null and currentUser.avatar != null ? currentUser.avatar : 'https://i.pravatar.cc/100?u=9'}"
+                    <img th:src="${currentUser != null and currentUser.avatar != null ? currentUser.avatar : 'https://i.pravatar.cc/100?u=' + (currentUser != null ? currentUser.username : 'default')}"
                          alt="User Avatar"
                          class="user-avatar">
                     <span class="user-name" sec:authentication="name">username</span>
@@ -98,12 +98,21 @@
                 </div>
             </div>
             <aside class="sidebar-right">
-                <h3>Ảnh nổi bật</h3>
-                <div class="featured-grid">
-                    <div class="featured-item"><img src="https://picsum.photos/200/300?random=11"><span>❤️ 1.2k</span></div>
-                    <div class="featured-item"><img src="https://picsum.photos/200/300?random=12"><span>❤️ 1.1k</span></div>
-                    <div class="featured-item"><img src="https://picsum.photos/200/300?random=13"><span>❤️ 1.2k</span></div>
-                    <div class="featured-item"><img src="https://picsum.photos/200/300?random=14"><span>❤️ 1.1k</span></div>
+                <h3>Bài viết nổi bật</h3>
+                <div class="featured-grid" th:if="${featuredImages != null and not #lists.isEmpty(featuredImages)}">
+                    <a class="featured-item"
+                       th:each="item : ${featuredImages}"
+                       th:href="@{/feed/{id}(id=${item.postId})}">
+                        <img th:src="@{${item.filePath}}" alt="featured image">
+                        <span>
+                            <i class="fa-solid fa-heart" style="color: #ff4d6d;"></i> <span th:text="${item.likesCount != null ? item.likesCount : 0}" style="position: static; transform: none; background: transparent; padding: 0;">0</span>
+                        </span>
+                    </a>
+                </div>
+                <div class="featured-grid" th:if="${featuredImages == null or #lists.isEmpty(featuredImages)}">
+                    <div class="featured-item" style="grid-column: 1 / -1; text-align: center;">
+                        <span>Chưa có ảnh nổi bật</span>
+                    </div>
                 </div>
             </aside>
         </div>
@@ -116,7 +125,7 @@
     <div class="modal">
         <div class="modal-header">
             <div class="user-info">
-                <img th:src="${currentUser != null and currentUser.avatar != null ? currentUser.avatar : 'https://i.pravatar.cc/100?u=9'}" alt="User">
+                <img th:src="${currentUser != null and currentUser.avatar != null ? currentUser.avatar : 'https://i.pravatar.cc/100?u=' + (currentUser != null ? currentUser.username : 'default')}" alt="User">
                 <span sec:authentication="name">username</span>
             </div>
             <i class="fa-solid fa-xmark close-modal"></i>

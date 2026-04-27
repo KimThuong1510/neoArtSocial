@@ -1,14 +1,14 @@
-
-
 /* ================= POST CONTAINER ================= */
 .post-container {
     background: #fff;
     border-radius: 24px;
     padding: 24px;
     width: 100%;
-    max-width: 1200px;      /* CÃ™NG Äá»˜ Rá»˜NG SEARCH BAR */
-    margin: 20px auto 40px;
+    max-width: 100%;        /* Khong vuot qua vung content-layout */      /* CÃ™NG Äá»˜ Rá»˜NG SEARCH BAR */
+    margin: 20px 0 40px;    /* Bo auto de khong tran sang sidebar */
     box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    box-sizing: border-box;
+    min-width: 0;           /* Cho phep co lai trong grid/flex */
 }
 
 /* ================= MAIN LAYOUT ================= */
@@ -146,8 +146,9 @@
 }
 
 /* ================= SCROLLBAR ================= */
+/* overflow-y removed: caused content clipping when comments open */
 .post-container {
-    overflow-y: auto;
+    overflow: visible;
 }
 
 /* ================= RESPONSIVE ================= */
@@ -290,9 +291,20 @@
     border-bottom: 1px solid #ddd
     padding-bottom: 10px;
     margin-bottom: 10px;
+    avatar-smallborder-bottom: 1px solid #eee;
 }
+.avatar-small {
+   display: flex;
+   align-items: center;
+   gap: 12px;
+   padding: 10px 15px;
+   border-bottom: 1px solid #f5f5f5;
+}
+
+.avatar-small:hover { background: #fdf5f6; }
+
 #imageCommentPreview {
-    max-height: 25vh;
+    max-height: 40vh;
     overflow-y: auto;
     overflow-x: hidden;
     padding-right: 10px;
