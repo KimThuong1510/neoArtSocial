@@ -47,6 +47,9 @@ public class ProfileController {
     @Autowired
     private SavedCollectionService savedCollectionService;
 
+    @Autowired
+    private com.example.demo.service.PostInteractionService postInteractionService;
+
     @GetMapping("")
     public String profilePage(Authentication authentication,
                                @RequestParam(value = "category", required = false) String category,
@@ -92,8 +95,14 @@ public class ProfileController {
             return map;
         }).toList();
 
+        Map<Long, com.example.demo.dto.PostSocialStateDto> socialStates = new HashMap<>();
+        for (Post post : myPosts) {
+            socialStates.put(post.getId(), postInteractionService.getSocialState(post.getId(), user));
+        }
+
         model.addAttribute("user", user);
         model.addAttribute("myPosts", myPosts);
+        model.addAttribute("socialStates", socialStates);
         model.addAttribute("savedCollections", savedCollections);
         model.addAttribute("topics", topicRepository.findAll());
 

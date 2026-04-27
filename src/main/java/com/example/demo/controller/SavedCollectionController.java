@@ -19,6 +19,12 @@ public class SavedCollectionController {
     @Autowired
     private SavedCollectionService collectionService;
 
+    @Autowired
+    private com.example.demo.service.PostInteractionService postInteractionService;
+
+    @Autowired
+    private com.example.demo.repository.UserRepository userRepository;
+
     @GetMapping
     public ResponseEntity<?> getUserCollections(Authentication authentication, @RequestParam(required = false) Long postId) {
         try {
@@ -108,21 +114,22 @@ public class SavedCollectionController {
                     for (int i = 0; i < post.getImages().size(); i++) {
                         Map<String, Object> imgMap = new HashMap<>();
                         imgMap.put("url", post.getImages().get(i).getFilePath());
-                        imgMap.put("likes", 130 + (i * 7));
-                        imgMap.put("comments", 30 + (i * 5));
+                        // Removed per-image likes/comments as we only use post-level interaction
                         imagesData.add(imgMap);
                     }
                     map.put("images", imagesData);
                     map.put("image", post.getImages().get(0).getFilePath());
-
-                    map.put("likes", 130);
-                    map.put("comments", 30);
                 } else {
                     map.put("image", "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee");
-                    map.put("images", java.util.List.of(Map.of("url", "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee", "likes", 130, "comments", 30)));
-                    map.put("likes", 130);
-                    map.put("comments", 30);
+                    map.put("images", java.util.List.of(Map.of("url", "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee")));
                 }
+
+                // Get real social state
+                com.example.demo.model.User currentUser = userRepository.findByUsername(username).orElse(null);
+                com.example.demo.dto.PostSocialStateDto socialState = postInteractionService.getSocialState(post.getId(), currentUser);
+                map.put("likes", socialState.getLikeCount());
+                map.put("comments", socialState.getComments() != null ? socialState.getComments().size() : 0);
+                map.put("likedByCurrentUser", socialState.isLikedByCurrentUser());
 
                 return map;
             }).collect(Collectors.toList());

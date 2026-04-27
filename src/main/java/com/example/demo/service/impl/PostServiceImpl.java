@@ -37,6 +37,10 @@ public class PostServiceImpl implements PostService {
     private SavedPostRepository savedPostRepository;
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private com.example.demo.repository.PostLikeRepository postLikeRepository;
+    @Autowired
+    private com.example.demo.repository.CommentRepository commentRepository;
     @Override
     @Transactional
     public void createPost(
@@ -178,6 +182,8 @@ public class PostServiceImpl implements PostService {
             dto.setTopicName(post.getTopic() != null ? post.getTopic().getName() : "Không chủ đề");
             dto.setTopicCode(post.getTopic() != null ? post.getTopic().getCode() : "tag-default");
             dto.setCreatedAt(post.getCreatedAt());
+            dto.setLikes(postLikeRepository.countByPost(post));
+            dto.setComments(commentRepository.countByPost(post));
 
             List<PostImageAdminDTO> imageDTOs = post.getImages().stream().map(img -> {
                 PostImageAdminDTO imgDto = new PostImageAdminDTO();

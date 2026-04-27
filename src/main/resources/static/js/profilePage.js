@@ -405,48 +405,238 @@ confirmDelete.onclick = () => {
 // Modal hiển thị comment
 const commentModal = document.getElementById("commentModal");
 const closeComment = document.querySelector(".close-comment");
-
-document.querySelectorAll(".fa-comment, .commentCount").forEach(btn => {
-
-    btn.addEventListener("click", () => {
-
-        const card = btn.closest(".card");
-        const img = card.querySelector("img").src;
-
-        document.getElementById("commentPostImage").src = img;
-
-        commentModal.style.display = "flex";
-
-    });
-
-});
-
-closeComment.addEventListener("click", () => {
-    commentModal.style.display = "none";
-});
-
-commentModal.addEventListener("click", (e) => {
-
-    if (e.target === commentModal) {
-        commentModal.style.display = "none";
-    }
-
-});
-
-// modal like
+const commentTree = document.getElementById("commentTree");
+const commentInput = document.getElementById("commentInput");
+const sendCommentBtn = document.getElementById("sendComment");
 const likeModal = document.getElementById("likeModal");
 const closeLike = document.querySelector(".close-like");
 
-document.querySelectorAll(".likeCount").forEach(btn => {
+let currentCommentPostId = null;
 
-    btn.addEventListener("click", (e) => {
+// Helper: Escape HTML
+function escapeHtml(s) {
+    if (!s) return "";
+    const d = document.createElement("div");
+    d.textContent = s;
+    return d.innerHTML;
+}
 
-        e.stopPropagation();
+// Helper: Format Time
+function formatTime(iso) {
+    if (!iso) return "";
+    try { return new Date(iso).toLocaleString(); } catch (e) { return ""; }
+}
+
+// Render a single comment node
+function renderCommentNode(c, depth) {
+    const wrap = document.createElement("div");
+    wrap.className = "comment-node";
+    wrap.style.marginLeft = depth > 0 ? Math.min(depth * 16, 80) + "px" : "0";
+    wrap.style.borderLeft = depth > 0 ? "2px solid #eee" : "none";
+    wrap.style.paddingLeft = depth > 0 ? "10px" : "0";
+    wrap.style.marginTop = "10px";
+    wrap.dataset.commentId = String(c.id);
+
+    const avatar = c.authorAvatar || "https://i.pravatar.cc/40?u=" + encodeURIComponent(c.authorUsername || "");
+    const name = c.authorNickname || c.authorUsername || "User";
+
+    wrap.innerHTML = `
+        <div class="comment-item" style="display:flex;gap:10px;align-items:flex-start;">
+            <img class="comment-avatar" src="${escapeHtml(avatar)}" alt="" width="36" height="36" style="border-radius:50%;object-fit:cover;">
+            <div class="comment-body" style="flex:1;">
+                <div>
+                    <span class="comment-username" style="font-weight:600;">${escapeHtml(name)}</span>
+                    <span style="color:#888;font-size:12px;margin-left:6px;">${formatTime(c.createdAt)}</span>
+                </div>
+                <div class="comment-text" style="margin-top:4px;white-space:pre-wrap;">${escapeHtml(c.content)}</div>
+            </div>
+        </div>
+    `;
+
+    const repliesBox = document.createElement("div");
+    repliesBox.className = "comment-replies-children";
+    (c.replies || []).forEach((r) => {
+        repliesBox.appendChild(renderCommentNode(r, depth + 1));
+    });
+    wrap.appendChild(repliesBox);
+    return wrap;
+}
+
+function countCommentsFlat(list) {
+    let n = 0;
+    function walk(arr) {
+        (arr || []).forEach((c) => { n++; walk(c.replies || []); });
+    }
+    walk(list);
+    return n;
+}
+
+// Event delegation for Like and Comment buttons on post cards
+document.addEventListener("click", async (e) => {
+    // LIKE functionality
+    if (e.target.closest('.likeBtn')) {
+        const btn = e.target.closest('.likeBtn');
+        const card = btn.closest('.card');
+        if (!card) return;
+        const postId = card.getAttribute('data-post-id');
+        if (!postId) return;
+
+        try {
+            const res = await fetch("/api/posts/" + postId + "/like", {
+                method: "POST",
+                credentials: "same-origin"
+            });
+            if (res.ok) {
+                const data = await res.json();
+                btn.className = data.liked ? "fa-solid fa-heart likeBtn" : "fa-regular fa-heart likeBtn";
+                btn.style.color = data.liked ? "#ff4d6d" : "#333";
+                const likeCountEl = card.querySelector('.likeCount');
+                if (likeCountEl) likeCountEl.textContent = data.likeCount;
+            }
+        } catch (err) {
+            console.error("Lỗi khi like bài viết:", err);
+        }
+    }
+
+    // LIKERS modal
+    if (e.target.closest('.likeCount')) {
+        const btn = e.target.closest('.likeCount');
+        const card = btn.closest('.card');
+        if (!card) return;
+        const postId = card.getAttribute('data-post-id');
+        if (!postId) return;
 
         likeModal.style.display = "flex";
+        const listEl = likeModal.querySelector(".like-list");
+        if (!listEl) return;
+        listEl.innerHTML = '<p style="padding:12px;color:#888;">Đang tải...</p>';
+        try {
+            const res = await fetch("/api/posts/" + postId + "/likers", { credentials: "same-origin" });
+            if (!res.ok) throw new Error("likers failed");
+            const likers = await res.json();
+            listEl.innerHTML = "";
+            if (!likers.length) {
+                listEl.innerHTML = '<p style="padding:12px;color:#888;">Chưa có lượt thích.</p>';
+                return;
+            }
+            likers.forEach((u) => {
+                const row = document.createElement("div");
+                row.className = "like-user";
+                const av = u.avatar || "https://i.pravatar.cc/32?u=" + encodeURIComponent(u.username);
+                row.innerHTML = `
+                    <div class="avatar-small"><img src="${escapeHtml(av)}" alt="" style="width:32px;height:32px;border-radius:50%;object-fit:cover;"></div>
+                    <div class="like-info"><b>${escapeHtml(u.nickname || u.username)}</b></div>
+                `;
+                listEl.appendChild(row);
+            });
+        } catch (err) {
+            listEl.innerHTML = '<p style="padding:12px;color:#c00;">Lỗi tải danh sách.</p>';
+        }
+    }
 
+    // COMMENT functionality
+    if (e.target.closest('.comment-btn') || e.target.closest('.commentCount')) {
+        const btn = e.target.closest('.comment-btn') || e.target.closest('.commentCount');
+        const card = btn.closest('.card');
+        if (!card) return;
+        const postId = card.getAttribute('data-post-id');
+        if (!postId) return;
+
+        currentCommentPostId = postId;
+        
+        // Update modal image
+        const imgEl = card.querySelector('img.img-main');
+        if (imgEl) {
+            document.getElementById("commentPostImage").src = imgEl.src;
+        }
+        
+        commentModal.style.display = "flex";
+        commentTree.innerHTML = '<p style="padding:12px;color:#888;text-align:center;">Đang tải...</p>';
+        
+        try {
+            const res = await fetch("/api/posts/" + postId + "/social", { credentials: "same-origin" });
+            if (!res.ok) throw new Error("fetch comments failed");
+            const data = await res.json();
+            commentTree.innerHTML = "";
+            if (data.comments && data.comments.length > 0) {
+                data.comments.forEach(c => commentTree.appendChild(renderCommentNode(c, 0)));
+            } else {
+                commentTree.innerHTML = '<p style="padding:12px;color:#888;text-align:center;">Chưa có bình luận nào.</p>';
+            }
+            // Update the comment count on the card just in case it's out of sync
+            const cc = card.querySelector(".commentCount");
+            if (cc) cc.textContent = String(countCommentsFlat(data.comments || []));
+        } catch (err) {
+            commentTree.innerHTML = '<p style="padding:12px;color:#c00;text-align:center;">Lỗi tải bình luận.</p>';
+        }
+    }
+});
+
+// Submit Comment
+async function submitComment() {
+    if (!currentCommentPostId || !commentInput) return;
+    const text = commentInput.value.trim();
+    if (!text) return;
+    
+    try {
+        const res = await fetch("/api/posts/" + currentCommentPostId + "/comments", {
+            method: "POST",
+            credentials: "same-origin",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ content: text, parentId: null })
+        });
+        if (!res.ok) throw new Error("submit comment failed");
+        const c = await res.json();
+        
+        // Remove empty message if exists
+        if (commentTree.querySelector('p')) {
+            commentTree.innerHTML = '';
+        }
+        
+        commentTree.appendChild(renderCommentNode(c, 0));
+        commentInput.value = "";
+        
+        // Update comment count on the active card
+        const card = document.querySelector(`.card[data-post-id="${currentCommentPostId}"]`);
+        if (card) {
+            const cc = card.querySelector(".commentCount");
+            if (cc) {
+                const cur = parseInt(cc.textContent, 10) || 0;
+                cc.textContent = String(cur + 1);
+            }
+        }
+        
+        // Scroll to bottom
+        commentTree.scrollTop = commentTree.scrollHeight;
+    } catch (err) {
+        console.error(err);
+        alert("Không gửi được bình luận.");
+    }
+}
+
+if (sendCommentBtn && commentInput) {
+    sendCommentBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        submitComment();
     });
+    commentInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            submitComment();
+        }
+    });
+}
 
+closeComment.addEventListener("click", () => {
+    commentModal.style.display = "none";
+    currentCommentPostId = null;
+});
+
+commentModal.addEventListener("click", (e) => {
+    if (e.target === commentModal) {
+        commentModal.style.display = "none";
+        currentCommentPostId = null;
+    }
 });
 
 closeLike.onclick = () => {
@@ -454,11 +644,9 @@ closeLike.onclick = () => {
 }
 
 likeModal.addEventListener("click", (e) => {
-
     if (e.target === likeModal) {
         likeModal.style.display = "none";
     }
-
 });
 
 // Bài đã lưu
@@ -554,6 +742,7 @@ document.querySelectorAll(".topic-card").forEach(card => {
                         imageHtml = `<img src="${post.image}" alt="Post Image" class="img-main">`;
                     }
 
+                    postCard.setAttribute('data-post-id', post.id);
                     postCard.innerHTML = `
                         ${imageHtml}
                         <div class="card-body">
@@ -567,8 +756,10 @@ document.querySelectorAll(".topic-card").forEach(card => {
                                 <i class="fa-solid fa-bookmark unsave-icon" style="cursor: pointer; color: #e60023; font-size: 1.2rem;" data-post-id="${post.id}" data-collection-id="${collectionId}" title="Xóa bài lưu"></i>
                             </div>
                             <div class="reaction">
-                                <span class="heart"><span class="heart-count">❤ ${post.likes}</span></span>
-                                <span><span class="comment-count">💬 ${post.comments}</span></span>
+                                <i class="${post.likedByCurrentUser ? 'fa-solid' : 'fa-regular'} fa-heart likeBtn" style="color:${post.likedByCurrentUser ? '#ff4d6d' : '#333'};cursor:pointer;"></i>
+                                <span class="likeCount">${post.likes}</span>
+                                <i class="fa-regular fa-comment comment-btn" style="cursor:pointer;"></i>
+                                <span class="commentCount">${post.comments}</span>
                             </div>
                         </div>
                     `;

@@ -1,10 +1,82 @@
+  let currentPageUser = 1;
+  const itemsPerPageUser = 5;
 
-  // Pagination
-  document.querySelectorAll('.page-btn:not(.arrow)').forEach(btn => {
-    btn.addEventListener('click', function () {
-      document.querySelectorAll('.page-btn:not(.arrow)').forEach(b => b.classList.remove('active'));
-      this.classList.add('active');
+  function updatePagination() {
+    const table = document.querySelector('.data-table');
+    const allRows = Array.from(document.querySelectorAll('.data-table tbody tr'));
+    const q = (document.getElementById('searchInput') ? document.getElementById('searchInput').value.toLowerCase() : '');
+    
+    // Filter matching rows
+    const matchingRows = allRows.filter(row => {
+        const nameCells = row.querySelectorAll('td');
+        const username = nameCells[1]?.textContent.toLowerCase() || '';
+        return username.includes(q);
     });
+
+    const totalPages = Math.ceil(matchingRows.length / itemsPerPageUser);
+    if (currentPageUser > totalPages) currentPageUser = totalPages;
+    if (currentPageUser < 1) currentPageUser = 1;
+
+    // Show/hide based on page
+    const startIdx = (currentPageUser - 1) * itemsPerPageUser;
+    const endIdx = startIdx + itemsPerPageUser;
+
+    allRows.forEach(row => row.style.display = 'none'); // hide all initially
+    
+    matchingRows.forEach((row, index) => {
+        if (index >= startIdx && index < endIdx) {
+            row.style.display = '';
+        }
+    });
+
+    // Handle no results
+    const noResults = document.getElementById('noResults');
+    if (noResults) {
+        if (matchingRows.length === 0 && allRows.length > 0) {
+            noResults.style.display = 'block';
+            table.style.display = 'none';
+        } else {
+            noResults.style.display = 'none';
+            table.style.display = 'table';
+        }
+    }
+
+    renderUserPagination(totalPages);
+  }
+
+  function renderUserPagination(totalPages) {
+    const pageBtnsContainer = document.querySelector('.pagination');
+    if (!pageBtnsContainer) return;
+
+    if (totalPages <= 1) {
+        pageBtnsContainer.innerHTML = '';
+        return;
+    }
+
+    let html = '';
+    
+    // Prev button
+    html += `<button class="page-btn arrow" onclick="changeUserPage(${currentPageUser - 1})" ${currentPageUser === 1 ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}><i class="fa-solid fa-chevron-left"></i></button>`;
+    
+    // Page numbers
+    for (let i = 1; i <= totalPages; i++) {
+        html += `<button class="page-btn ${currentPageUser === i ? 'active' : ''}" onclick="changeUserPage(${i})">${i}</button>`;
+    }
+    
+    // Next button
+    html += `<button class="page-btn arrow" onclick="changeUserPage(${currentPageUser + 1})" ${currentPageUser === totalPages ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}><i class="fa-solid fa-chevron-right"></i></button>`;
+    
+    pageBtnsContainer.innerHTML = html;
+  }
+
+  function changeUserPage(page) {
+    currentPageUser = page;
+    updatePagination();
+  }
+
+  // Initialize pagination on load
+  document.addEventListener('DOMContentLoaded', () => {
+      updatePagination();
   });
 
   // Search
@@ -16,37 +88,13 @@
   if (searchInput) {
     searchInput.addEventListener('input', function () {
       const q = this.value.toLowerCase();
-      let hasVisible = false;
-
       if (q.length > 0 && clearSearch) {
           clearSearch.style.display = 'block';
       } else if (clearSearch) {
           clearSearch.style.display = 'none';
       }
-
-      document.querySelectorAll('.data-table tbody tr').forEach(row => {
-        const nameCells = row.querySelectorAll('td');
-        // 'Biệt danh' is mapped to user.username according to the table headers and th:text
-        const username = nameCells[1]?.textContent.toLowerCase() || '';
-        
-        // As requested by user, search only by username in user.html
-        if (username.includes(q)) {
-           row.style.display = '';
-           hasVisible = true;
-        } else {
-           row.style.display = 'none';
-        }
-      });
-
-      if (noResults) {
-          if (!hasVisible && document.querySelectorAll('.data-table tbody tr').length > 0) {
-              noResults.style.display = 'block';
-              table.style.display = 'none';
-          } else {
-              noResults.style.display = 'none';
-              table.style.display = 'table';
-          }
-      }
+      currentPageUser = 1;
+      updatePagination();
     });
   }
 

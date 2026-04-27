@@ -15,6 +15,8 @@ let currentModalImages = [];
     document.getElementById('modalAuthor').textContent   = d.author;
     document.getElementById('modalDate').textContent     = d.date;
     document.getElementById('modalContent').textContent  = d.content;
+    document.getElementById('modalLikes').textContent    = Number(d.likes || 0).toLocaleString('vi-VN');
+    document.getElementById('modalComments').textContent = Number(d.comments || 0).toLocaleString('vi-VN');
 
     updateModalImage();
 
@@ -30,10 +32,6 @@ let currentModalImages = [];
     if (currentModalImages.length > 0) {
       const img = currentModalImages[currentModalIndex];
       thumbWrap.innerHTML = `<img class="modal-thumb" src="${img.url}" alt="Post Image"/>`;
-      
-      // Update stats based on current image
-      document.getElementById('modalLikes').textContent    = Number(img.likes).toLocaleString('vi-VN');
-      document.getElementById('modalComments').textContent = Number(img.comments).toLocaleString('vi-VN');
       
       // Navigation
       if (currentModalImages.length > 1) {
@@ -65,10 +63,6 @@ let currentModalImages = [];
     
     const imgData = images[currentIndex];
     card.querySelector('.card-img-main').src = imgData.url;
-    
-    // Update labels
-    card.querySelector('.likes-count').textContent = imgData.likes;
-    card.querySelector('.comments-count').textContent = imgData.comments;
   }
 
   function closeModal() {

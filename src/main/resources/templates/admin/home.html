@@ -36,6 +36,8 @@
                           data-topic=${post.topicName},
                           data-topic-class=${post.topicCode},
                           data-date=${#temporals.format(post.createdAt, 'dd/MM/yyyy')},
+                          data-likes=${post.likes},
+                          data-comments=${post.comments},
                           data-images-json=${post.imagesJson},
                           data-content=${post.content}">
                 
@@ -59,8 +61,8 @@
                     <p class="card-date" th:text="${#temporals.format(post.createdAt, 'd/M/yyyy')}">Ngày đăng</p>
 
                     <div class="card-quick-stats">
-                        <span><i class="fa-solid fa-heart"></i> <span class="likes-count" th:text="${!post.images.isEmpty() ? post.images[0].likes : 0}">0</span></span>
-                        <span><i class="fa-solid fa-comment"></i> <span class="comments-count" th:text="${!post.images.isEmpty() ? post.images[0].comments : 0}">0</span></span>
+                        <span><i class="fa-solid fa-heart"></i> <span class="likes-count" th:text="${post.likes}">0</span></span>
+                        <span><i class="fa-solid fa-comment"></i> <span class="comments-count" th:text="${post.comments}">0</span></span>
                     </div>
                 </div>
                 <div class="card-footer">

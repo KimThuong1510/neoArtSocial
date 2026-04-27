@@ -114,7 +114,7 @@
 
     <!-- ===== MY POSTS ===== -->
     <div class="posts" id="myPosts">
-        <div class="card" th:each="post : ${myPosts}">
+        <div class="card" th:each="post : ${myPosts}" th:data-post-id="${post.id}">
 
             <div class="card-menu">
                 <i class="fa-solid fa-ellipsis"></i>
@@ -159,10 +159,11 @@
                     </div>
                 </div>
                 <div class="reaction">
-                    <i class="fa-regular fa-heart"></i>
-                    <span class="likeCount">0</span>
-                    <i class="fa-regular fa-comment comment-btn"></i>
-                    <span class="commentCount">0</span>
+                    <i th:class="${socialStates[post.id].likedByCurrentUser} ? 'fa-solid fa-heart likeBtn' : 'fa-regular fa-heart likeBtn'" 
+                       th:style="${socialStates[post.id].likedByCurrentUser} ? 'color:#ff4d6d;cursor:pointer;' : 'color:#333;cursor:pointer;'"></i>
+                    <span class="likeCount" th:text="${socialStates[post.id].likeCount}">0</span>
+                    <i class="fa-regular fa-comment comment-btn" style="cursor:pointer;"></i>
+                    <span class="commentCount" th:text="${socialStates[post.id].comments != null ? #lists.size(socialStates[post.id].comments) : 0}">0</span>
                 </div>
             </div>
         </div>
@@ -267,20 +268,13 @@
                 <span>Bình luận</span>
                 <i class="fa-solid fa-xmark close-comment"></i>
             </div>
-            <div class="comment-list">
-                <div class="comment-item">
-                    <div class="avatar-small"><i class="fa fa-user"></i></div>
-                    <div class="comment-text">
-                        <b>Linh</b>
-                        <p>Ảnh rất đẹp! Quá là một tác phẩm tuyệt vời.</p>
-                        <div class="comment-action">❤ 45 <span>Phản hồi</span></div>
-                    </div>
-                </div>
+            <div class="comment-list" id="commentTree" style="overflow-y:auto;max-height:calc(100% - 100px);padding:10px;">
+                <!-- Comments will be injected here -->
             </div>
-            <div class="comment-input">
-                <div class="avatar-small"><i class="fa fa-user"></i></div>
-                <input type="text" placeholder="Thêm bình luận...">
-                <button><i class="fa-solid fa-arrow-right"></i></button>
+            <div class="comment-input" style="padding:10px; border-top:1px solid #ddd; display:flex; gap:10px; align-items:center;">
+                <img th:src="${user.avatar != null ? user.avatar : 'https://i.pravatar.cc/40?u=' + user.username}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+                <input id="commentInput" type="text" placeholder="Thêm bình luận..." style="flex:1; border:none; outline:none; background:#f0f2f5; padding:10px; border-radius:20px;">
+                <button id="sendComment" style="background:none;border:none;color:#e60023;cursor:pointer;font-size:20px;"><i class="fa-solid fa-paper-plane"></i></button>
             </div>
         </div>
     </div>

@@ -1,7 +1,10 @@
-/* ── DATA ── */
   let topics = [];
   let selectedColor = 1;
   let activeSwipe = null;
+  
+  let currentPageTopic = 1;
+  const itemsPerPageTopic = 5;
+
 
   /* ── BADGE COLORS (for ranking dots) ── */
   const badgeColors = ['','#F26B4E','#3498db','#27ae60','#9b59b6','#e74c3c','#c8960c','#1abc9c'];
@@ -47,7 +50,6 @@
     }).join('');
   }
 
-  /* ── RENDER ROWS ── */
   function renderRows(data) {
     const container = document.getElementById('rowsContainer');
     const empty = document.getElementById('emptyState');
@@ -68,12 +70,21 @@
           if (emptyDesc) emptyDesc.textContent = 'Chưa có dữ liệu nào để hiển thị.';
       }
       if(table) table.style.display = 'none';
+      renderTopicPagination(0);
       return;
     }
     empty.style.display = 'none';
     if(table) table.style.display = 'table';
 
-    container.innerHTML = data.map((t, i) => `
+    const totalPages = Math.ceil(data.length / itemsPerPageTopic);
+    if (currentPageTopic > totalPages) currentPageTopic = totalPages;
+    if (currentPageTopic < 1) currentPageTopic = 1;
+
+    const startIdx = (currentPageTopic - 1) * itemsPerPageTopic;
+    const pageData = data.slice(startIdx, startIdx + itemsPerPageTopic);
+
+
+    container.innerHTML = pageData.map((t, i) => `
       <div class="row-wrapper" data-id="${t.id}" id="row-${t.id}">
         <div class="action-reveal">
           <button class="reveal-btn edit-btn" onclick="openEditModal(${t.id})">
@@ -89,7 +100,7 @@
              data-id="${t.id}"
              onmousedown="startDrag(event, ${t.id})"
              ontouchstart="startDragTouch(event, ${t.id})">
-          <div class="col-stt">${String(i+1).padStart(2,'0')}</div>
+          <div class="col-stt">${String(startIdx + i + 1).padStart(2,'0')}</div>
           <div class="col-id"><span class="tag-id"><span></span>${t.code}</span></div>
           <div class="col-name">
             <span class="topic-badge badge-${t.badge}">${t.name}</span>
@@ -102,6 +113,8 @@
         </div>
       </div>
     `).join('');
+
+    renderTopicPagination(totalPages);
   }
 
   /* ── SWIPE DRAG ── */
@@ -256,6 +269,7 @@
       } else if (clearSearch) {
           clearSearch.style.display = 'none';
       }
+      currentPageTopic = 1;
       renderRows(filterTopics(this.value));
     });
   }
@@ -392,12 +406,41 @@
   }
 
   /* ── PAGINATION BTN ── */
-  document.querySelectorAll('.page-btn:not(.arrow)').forEach(btn => {
-    btn.addEventListener('click', function () {
-      document.querySelectorAll('.page-btn:not(.arrow)').forEach(b => b.classList.remove('active'));
-      this.classList.add('active');
-    });
-  });
+  function renderTopicPagination(totalPages) {
+    const pageBtnsContainer = document.querySelector('.page-btns');
+    if (!pageBtnsContainer) return;
+
+    if (totalPages <= 1) {
+        pageBtnsContainer.innerHTML = '';
+        return;
+    }
+
+    let html = '';
+    
+    // Prev button
+    html += `<button class="page-btn arrow" onclick="changeTopicPage(${currentPageTopic - 1})" ${currentPageTopic === 1 ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}><i class="fa-solid fa-chevron-left"></i></button>`;
+    
+    // Page numbers
+    for (let i = 1; i <= totalPages; i++) {
+        html += `<button class="page-btn ${currentPageTopic === i ? 'active' : ''}" onclick="changeTopicPage(${i})">${i}</button>`;
+    }
+    
+    // Next button
+    html += `<button class="page-btn arrow" onclick="changeTopicPage(${currentPageTopic + 1})" ${currentPageTopic === totalPages ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}><i class="fa-solid fa-chevron-right"></i></button>`;
+    
+    pageBtnsContainer.innerHTML = html;
+  }
+
+  function changeTopicPage(page) {
+    const searchQuery = document.getElementById('searchInput') ? document.getElementById('searchInput').value : '';
+    const data = filterTopics(searchQuery);
+    const totalPages = Math.ceil(data.length / itemsPerPageTopic);
+    
+    if (page >= 1 && page <= totalPages) {
+        currentPageTopic = page;
+        renderRows(data);
+    }
+  }
 
   /* ── CLICK OUTSIDE TO RESET SWIPE + INLINE EDIT ── */
   document.addEventListener('click', e => {

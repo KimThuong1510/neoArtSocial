@@ -9,6 +9,7 @@
     box-shadow: 0 8px 30px rgba(0,0,0,0.08);
     box-sizing: border-box;
     min-width: 0;           /* Cho phep co lai trong grid/flex */
+    margin: 10px 10px;
 }
 
 /* ================= MAIN LAYOUT ================= */
@@ -22,6 +23,7 @@
 .post-left {
     display: flex;
     flex-direction: column;
+    max-height: 75vh;
 }
 
 /* MAIN IMAGE */

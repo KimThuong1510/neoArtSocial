@@ -1,33 +1,33 @@
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
       --primary: #F26B4E;
-      --primary-light: rgba(242,107,78,.10);
+      --primary-light: #fde8e2;
       --primary-glow: rgba(242,107,78,.25);
       --primary-hover: #e05538;
-      --sidebar-bg: #0f0f13;
-      --sidebar-width: 240px;
-      --topbar-h: 68px;
-      --bg: #f7f5f2;
+      --sidebar-bg: #fff;
+      --sidebar-width: 220px;
+      --topbar-h: 64px;
+      --bg: #fdf5f3;
       --card-bg: #fff;
-      --text: #141414;
-      --text-muted: #999;
-      --border: rgba(0,0,0,.07);
-      --card-shadow: 0 4px 24px rgba(0,0,0,.06);
-      --radius: 20px;
+      --text: #1a1a1a;
+      --text-muted: #888;
+      --border: #f0e8e5;
+      --badge-shadow: 0 2px 8px rgba(242,107,78,.25);
+      --card-shadow: 0 2px 16px rgba(200,100,80,.08);
+      --radius: 16px;
       --delete-bg: #ff3b30;
     }
 
     body {
-      font-family: 'Sora', sans-serif;
+      font-family: 'Be Vietnam Pro', sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
       display: flex;
     }
 
-    /* ── SIDEBAR ── */
+    /* â”€â”€ SIDEBAR â”€â”€ */
     .sidebar {
       width: var(--sidebar-width);
       background: #fff;
@@ -48,13 +48,15 @@
     }
 
     .logo-icon {
-      width: 40px; height: 40px;
-      background: var(--primary);
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: 18px; color: #fff;
-      letter-spacing: -1px;
-      flex-shrink: 0;
+      width: 40px;
+             height: 40px;
+             flex-shrink: 0;
+    }
+
+    .logo-icon .logo-img {
+        width: 100%;
+            height: 100%;
+            object-fit: contain;
     }
 
     .logo-text h2 { font-size: 16px; font-weight: 700; color: var(--text); line-height: 1.1; }
@@ -87,10 +89,10 @@
     }
     .sidebar-footer .nav-item { padding: 10px 14px; }
 
-    /* ── MAIN ── */
+    /* â”€â”€ MAIN â”€â”€ */
     .main { margin-left: var(--sidebar-width); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
 
-    /* ── TOPBAR ── */
+    /* â”€â”€ TOPBAR â”€â”€ */
     .topbar {
       height: var(--topbar-h);
       background: #fff;
@@ -127,26 +129,29 @@
       border-radius: 10px;
       display: flex; align-items: center; justify-content: center;
       font-weight: 700; font-size: 15px; color: #fff;
+      cursor: pointer;
     }
+    .admin-info { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .admin-info span { font-size: 14px; font-weight: 600; }
     .avatar-info span { font-size: 14px; font-weight: 600; display: block; }
     .avatar-info small { display: none; }
 
-    /* ── CONTENT ── */
+    /* â”€â”€ CONTENT â”€â”€ */
     .content { padding: 28px; flex: 1; }
 
-    /* ── CONTENT LAYOUT: stats left (vertical) + table right ── */
+    /* â”€â”€ CONTENT LAYOUT: stats left (vertical) + table right â”€â”€ */
     .content-grid {
       display: flex;
-      gap: 22px;
+      gap: 20px;
       align-items: flex-start;
     }
 
-    /* ── STATS COLUMN (vertical, left) ── */
+    /* â”€â”€ STATS COLUMN (vertical, left) â”€â”€ */
     .stats-col {
       display: flex;
       flex-direction: column;
       gap: 14px;
-      width: 210px;
+      width: 610px;
       flex-shrink: 0;
       position: sticky;
       top: calc(var(--topbar-h) + 28px);
@@ -156,18 +161,19 @@
       font-size: 11px;
       font-weight: 700;
       letter-spacing: 1px;
-      color: #bbb;
+      color: #310d0d;
       text-transform: uppercase;
-      margin-bottom: 2px;
+      /* margin-bottom: 2px; */
     }
 
-    /* ── STATS PANEL (ranking) ── */
+    /* â”€â”€ STATS PANEL (ranking) â”€â”€ */
     .stats-panel {
       background: #fff;
       border-radius: 16px;
       border: 1.5px solid var(--border);
       box-shadow: var(--card-shadow);
       overflow: hidden;
+      margin-top: 30px;
     }
 
     .stats-panel-header {
@@ -275,10 +281,10 @@
       color: var(--text);
     }
 
-    /* ── TABLE COLUMN (right, grows) ── */
+    /* â”€â”€ TABLE COLUMN (right, grows) â”€â”€ */
     .table-col { flex: 1; min-width: 0; }
 
-    /* ── TABLE SECTION ── */
+    /* â”€â”€ TABLE SECTION â”€â”€ */
     .table-section-header {
       display: flex;
       align-items: center;
@@ -309,7 +315,7 @@
     .btn-add:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 8px 24px var(--primary-glow); }
     .btn-add i { font-size: 12px; }
 
-    /* ── TABLE CARD ── */
+    /* â”€â”€ TABLE CARD â”€â”€ */
     .table-card {
       background: var(--card-bg);
       border-radius: var(--radius);
@@ -318,7 +324,7 @@
       overflow: hidden;
     }
 
-    /* ── TABLE ── */
+    /* â”€â”€ TABLE â”€â”€ */
     .data-table {
       width: 100%;
       border-collapse: collapse;
@@ -337,7 +343,7 @@
       border-bottom: 1px solid var(--border);
     }
 
-    /* ── SWIPE ROW ── */
+    /* â”€â”€ SWIPE ROW â”€â”€ */
     .row-wrapper {
       position: relative;
       overflow: hidden;
@@ -451,7 +457,7 @@
     .swipe-hint:hover { color: #f0a090; }
     .swipe-hint i { font-size: 11px; }
 
-    /* ── PAGINATION ── */
+    /* â”€â”€ PAGINATION â”€â”€ */
     .pagination {
       display: flex;
       align-items: center;
@@ -482,7 +488,7 @@
     .page-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); box-shadow: 0 2px 8px var(--primary-glow); }
     .page-btn.arrow { color: #ccc; }
 
-    /* ── MODAL OVERLAY ── */
+    /* â”€â”€ MODAL OVERLAY â”€â”€ */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -626,7 +632,7 @@
     .color-opt:hover { transform: scale(1.15); }
     .color-opt.selected { border-color: #333; transform: scale(1.15); }
 
-    /* ── DELETE CONFIRM ── */
+    /* â”€â”€ DELETE CONFIRM â”€â”€ */
     .toast {
       position: fixed;
       bottom: 28px; right: 28px;
@@ -648,7 +654,7 @@
     .toast.show { transform: translateY(0); opacity: 1; }
     .toast i { color: #27ae60; font-size: 15px; }
 
-    /* ── RESPONSIVE ── */
+    /* â”€â”€ RESPONSIVE â”€â”€ */
     @media (max-width: 1100px) {
       .stats-col { width: 180px; }
     }
@@ -665,7 +671,7 @@
       .content { padding: 20px; }
     }
 
-    /* ── EMPTY STATE ── */
+    /* â”€â”€ EMPTY STATE â”€â”€ */
     .empty-state {
       display: none;
       flex-direction: column;

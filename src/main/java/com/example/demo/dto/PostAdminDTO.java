@@ -16,6 +16,8 @@ public class PostAdminDTO {
     private String topicName;
     private String topicCode;
     private LocalDateTime createdAt;
+    private Long likes;
+    private Long comments;
     private List<PostImageAdminDTO> images;
 
     public String getImagesJson() {
